@@ -181,17 +181,24 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const nextRound = useCallback(() => {
-    if (!handlingPopState.current) {
-      history.pushState({ screen: 'pass-phone' }, '', '');
-    }
     setState(prev => {
       const nextRoundNum = prev.currentRound + 1;
+      const hasPlayers = prev.players.length > 0;
+      const nextScreen = hasPlayers ? 'pass-phone' : 'round-intro';
+
+      if (!handlingPopState.current) {
+        history.pushState({ screen: nextScreen }, '', '');
+      }
+
       return {
         ...prev,
         currentRound: nextRoundNum,
-        currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
+        currentPlayerIndex: hasPlayers
+          ? (prev.currentPlayerIndex + 1) % prev.players.length
+          : 0,
         intensity: calculateIntensity(nextRoundNum),
-        screen: 'pass-phone',
+        screen: nextScreen,
+        currentGameMode: hasPlayers ? prev.currentGameMode : null,
       };
     });
   }, []);
@@ -210,7 +217,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const nextPlayer = useCallback(() => {
     setState(prev => ({
       ...prev,
-      currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
+      currentPlayerIndex: prev.players.length > 0
+        ? (prev.currentPlayerIndex + 1) % prev.players.length
+        : 0,
     }));
   }, []);
 

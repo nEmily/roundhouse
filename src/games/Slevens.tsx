@@ -291,14 +291,18 @@ export function Slevens() {
             <div className="text-lg text-slate-400">First to {TARGET_TAPS} wins!</div>
           </div>
 
-          <div className="flex-1 grid grid-cols-2 gap-2">
-            {/* Roller Side */}
-            <button
-              onClick={handleRollerTap}
-              className="bg-gradient-to-br from-blue-500 to-blue-600 active:from-blue-700 active:to-blue-800 rounded-2xl p-8 flex flex-col items-center justify-center transition-all active:scale-95"
-              disabled={rollerTaps >= TARGET_TAPS || victimTaps >= TARGET_TAPS}
+          <div className="flex-1 grid grid-cols-2 gap-2 touch-none select-none">
+            {/* Roller Side — use onPointerDown for simultaneous two-thumb tapping */}
+            <div
+              onPointerDown={(e) => {
+                e.preventDefault();
+                if (rollerTaps < TARGET_TAPS && victimTaps < TARGET_TAPS) handleRollerTap();
+              }}
+              className={`bg-gradient-to-br from-blue-500 to-blue-600 active:from-blue-700 active:to-blue-800 rounded-2xl p-8 flex flex-col items-center justify-center active:scale-[0.97] cursor-pointer ${
+                rollerTaps >= TARGET_TAPS || victimTaps >= TARGET_TAPS ? 'opacity-60' : ''
+              }`}
             >
-              <div className="text-4xl font-bold mb-4">{player.name}</div>
+              <div className="text-4xl font-bold mb-4">{player?.name || 'Roller'}</div>
               <div className="text-7xl font-bold mb-4">{rollerTaps}</div>
               <div className="w-full bg-slate-900 rounded-full h-4">
                 <div
@@ -309,13 +313,17 @@ export function Slevens() {
               {rollerTaps >= TARGET_TAPS && (
                 <div className="text-3xl mt-4">🏆 WINNER!</div>
               )}
-            </button>
+            </div>
 
             {/* Victim Side */}
-            <button
-              onClick={handleVictimTap}
-              className="bg-gradient-to-br from-red-500 to-red-600 active:from-red-700 active:to-red-800 rounded-2xl p-8 flex flex-col items-center justify-center transition-all active:scale-95"
-              disabled={rollerTaps >= TARGET_TAPS || victimTaps >= TARGET_TAPS}
+            <div
+              onPointerDown={(e) => {
+                e.preventDefault();
+                if (rollerTaps < TARGET_TAPS && victimTaps < TARGET_TAPS) handleVictimTap();
+              }}
+              className={`bg-gradient-to-br from-red-500 to-red-600 active:from-red-700 active:to-red-800 rounded-2xl p-8 flex flex-col items-center justify-center active:scale-[0.97] cursor-pointer ${
+                rollerTaps >= TARGET_TAPS || victimTaps >= TARGET_TAPS ? 'opacity-60' : ''
+              }`}
             >
               <div className="text-4xl font-bold mb-4">{victim.name}</div>
               <div className="text-7xl font-bold mb-4">{victimTaps}</div>
@@ -328,7 +336,7 @@ export function Slevens() {
               {victimTaps >= TARGET_TAPS && (
                 <div className="text-3xl mt-4">🏆 WINNER!</div>
               )}
-            </button>
+            </div>
           </div>
         </div>
       )}

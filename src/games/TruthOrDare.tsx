@@ -40,12 +40,12 @@ export function TruthOrDare() {
     nextRound();
   };
 
-  if (!player) return null;
+  // player may be null when playing without names
 
   return (
     <GameLayout
       round={currentRound}
-      playerName={player.name}
+      playerName={player?.name}
       gameMode="truth-or-dare"
     >
       {!choice ? (

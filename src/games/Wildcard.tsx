@@ -30,12 +30,12 @@ export function Wildcard() {
     nextRound();
   };
 
-  if (!player || !prompt) return null;
+  if (!prompt) return null;
 
   return (
     <GameLayout
       round={currentRound}
-      playerName={player.name}
+      playerName={player?.name}
       gameMode="wildcard"
     >
       <GameCard>

@@ -79,17 +79,17 @@ function App() {
   // Welcome screen
   if (screen === 'welcome') {
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
+      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-8 safe-area-padding animate-fade-in">
         <div className="text-center max-w-2xl w-full">
-          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-7xl font-bold mb-4 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">
             Roundhouse
           </h1>
-          <p className="text-xl text-slate-300 mb-8">
+          <p className="text-xl text-slate-400 mb-12">
             One-phone party game for groups
           </p>
           <button
             onClick={() => setScreen('setup')}
-            className="bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-2xl px-12 py-4 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg active:scale-95"
+            className="bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-2xl px-14 py-5 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg active:scale-95"
           >
             Let's Go
           </button>
@@ -101,16 +101,16 @@ function App() {
   // Setup screen - add players + round count
   if (screen === 'setup') {
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 p-6 safe-area-padding animate-fade-in">
+      <div className="min-h-dvh bg-slate-900 text-slate-50 px-6 pt-8 pb-12 safe-area-padding animate-fade-in">
         <div className="max-w-2xl mx-auto">
           <button
             onClick={() => setScreen('welcome')}
-            className="text-slate-400 hover:text-white text-lg mb-4 active:scale-95 transition-colors"
+            className="text-slate-400 hover:text-white text-lg mb-6 active:scale-95 transition-colors"
           >
             ← Back
           </button>
-          <h2 className="text-4xl font-bold mb-2 text-center">Who's Playing?</h2>
-          <p className="text-slate-400 text-center mb-8">Add at least 3 players</p>
+          <h2 className="text-4xl font-bold mb-3 text-center">Who's Playing?</h2>
+          <p className="text-slate-400 text-center mb-10">Add names or skip — just pass the phone in a circle</p>
 
           <form
             onSubmit={(e) => {
@@ -121,13 +121,13 @@ function App() {
                 input.value = '';
               }
             }}
-            className="mb-6"
+            className="mb-8"
           >
             <input
               type="text"
               name="playerName"
               placeholder="Enter name"
-              className="w-full bg-slate-800 text-white text-xl px-6 py-4 rounded-xl border-2 border-slate-700 focus:border-pink-500 focus:outline-none mb-4"
+              className="w-full bg-slate-800 text-white text-xl px-6 py-4 rounded-xl border-2 border-slate-700 focus:border-pink-500 focus:outline-none mb-3"
               autoComplete="off"
             />
             <button
@@ -138,51 +138,61 @@ function App() {
             </button>
           </form>
 
-          <div className="space-y-3 mb-8">
-            {players.map(player => (
-              <div
-                key={player.id}
-                className="flex items-center justify-between bg-slate-800 px-6 py-4 rounded-xl"
-              >
-                <span className="text-xl font-medium">{player.name}</span>
-                <button
-                  onClick={() => removePlayer(player.id)}
-                  className="text-red-400 hover:text-red-300 font-bold text-lg"
+          {players.length > 0 && (
+            <div className="space-y-3 mb-10">
+              {players.map(player => (
+                <div
+                  key={player.id}
+                  className="flex items-center justify-between bg-slate-800 px-6 py-4 rounded-xl"
                 >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {players.length >= 3 && (
-            <button
-              onClick={() => startGame()}
-              className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-2xl px-12 py-4 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg active:scale-95"
-            >
-              Start Game ({players.length} players)
-            </button>
+                  <span className="text-xl font-medium">{player.name}</span>
+                  <button
+                    onClick={() => removePlayer(player.id)}
+                    className="text-red-400 hover:text-red-300 font-bold text-lg"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
+
+          <button
+            onClick={() => startGame()}
+            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-2xl px-12 py-5 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg active:scale-95"
+          >
+            {players.length > 0 ? `Start Game (${players.length} players)` : 'Start Game'}
+          </button>
         </div>
       </div>
     );
   }
 
+  // Games that require named players for their mechanics
+  const PLAYER_REQUIRED_MODES: GameMode[] = ['liars-dice', 'slevens'];
+  const availableModes = players.length > 0
+    ? ALL_GAME_MODES
+    : ALL_GAME_MODES.filter(m => !PLAYER_REQUIRED_MODES.includes(m));
+
   // Round intro - pick a game
   if (screen === 'round-intro') {
     const handleConfirm = (mode?: GameMode) => {
       setSelectedMode(null);
-      selectGameMode(mode, ALL_GAME_MODES);
-      setScreen('pass-phone');
+      selectGameMode(mode, availableModes);
+      if (players.length > 0) {
+        setScreen('pass-phone');
+      } else {
+        setScreen('game');
+      }
     };
 
     const selected = selectedMode ? GAME_INFO[selectedMode] : null;
 
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 p-6 safe-area-padding animate-fade-in">
+      <div className="min-h-dvh bg-slate-900 text-slate-50 px-6 pt-10 pb-8 safe-area-padding animate-fade-in">
         <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-6">
-            <div className="text-4xl font-bold mb-2">Pick a Game</div>
+          <div className="text-center mb-8">
+            <div className="text-4xl font-bold mb-3">Pick a Game</div>
             <div className="inline-block bg-slate-800 px-5 py-2 rounded-full text-base">
               {intensity === 1 ? '🟢 Chill' : intensity === 2 ? '🟡 Medium' : '🔴 Wild'}
             </div>
@@ -218,7 +228,7 @@ function App() {
           )}
 
           <div className="grid grid-cols-2 gap-2 scroll-fade max-h-[55vh] overflow-y-auto">
-            {ALL_GAME_MODES.map(mode => (
+            {availableModes.map(mode => (
               <button
                 key={mode}
                 onClick={() => setSelectedMode(mode)}
@@ -231,8 +241,8 @@ function App() {
             ))}
           </div>
 
-          {/* End Game button */}
-          {currentRound > 1 && (
+          {/* End Game button — only show when tracking scores */}
+          {currentRound > 1 && players.length > 0 && (
             <button
               onClick={() => endGame()}
               className="w-full mt-4 bg-slate-800 text-slate-400 hover:text-white font-medium text-base py-3 rounded-xl transition-all active:scale-95"
@@ -312,12 +322,12 @@ function App() {
     const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
 
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
+      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-8 safe-area-padding animate-fade-in">
         <div className="text-center max-w-2xl w-full">
-          <h2 className="text-5xl font-bold mb-8">Game Over!</h2>
-          <div className="bg-slate-800 p-8 rounded-2xl mb-8">
-            <h3 className="text-2xl font-bold mb-4">Final Scores</h3>
-            <div className="space-y-3">
+          <h2 className="text-5xl font-bold mb-10">Game Over!</h2>
+          <div className="bg-slate-800 p-8 rounded-2xl mb-10">
+            <h3 className="text-2xl font-bold mb-6">Final Scores</h3>
+            <div className="space-y-4">
               {sortedPlayers.map((player, index) => (
                 <div key={player.id} className="flex justify-between items-center">
                   <span className="text-xl">
@@ -331,7 +341,7 @@ function App() {
           </div>
           <button
             onClick={() => setScreen('welcome')}
-            className="bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-xl px-8 py-3 rounded-xl hover:from-pink-600 hover:to-purple-700 transition-all active:scale-95"
+            className="bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-2xl px-14 py-5 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg active:scale-95"
           >
             Play Again
           </button>

@@ -36,12 +36,12 @@ export function HerdMentality() {
     nextRound();
   };
 
-  if (!player || !question) return null;
+  if (!question) return null;
 
   return (
     <GameLayout
       round={currentRound}
-      playerName={player.name}
+      playerName={player?.name}
       gameMode="herd-mentality"
     >
       <GameCard>
@@ -56,7 +56,7 @@ export function HerdMentality() {
             <div className="bg-slate-700 rounded-2xl p-6 mb-8">
               <h3 className="text-2xl font-bold mb-4 text-yellow-400">How to Play:</h3>
               <ol className="text-left text-lg space-y-3 text-slate-200">
-                <li>1. {player.name} reads the question aloud</li>
+                <li>1. {player?.name || 'Someone'} reads the question aloud</li>
                 <li>2. Everyone shouts their answer at the same time</li>
                 <li>3. The majority wins</li>
                 <li>4. Minorities drink!</li>

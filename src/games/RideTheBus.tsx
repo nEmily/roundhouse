@@ -207,7 +207,7 @@ export function RideTheBus() {
     }
   };
 
-  if (!player || !gameStarted) return null;
+  if (!gameStarted) return null;
 
   const isRedBlackPhase = round.phase === 'red-or-black' && !round.revealed;
   const isHigherLowerPhase = round.phase === 'higher-or-lower' && !round.revealed;
@@ -221,7 +221,7 @@ export function RideTheBus() {
     <GameLayout
       round={currentRound}
       gameMode="ride-the-bus"
-      playerName={player.name}
+      playerName={player?.name}
     >
       <GameCard>
         {/* Phase indicator */}
@@ -326,26 +326,28 @@ export function RideTheBus() {
             size="lg"
             className="w-full"
           >
-            {round.correct ? `You're Off the Bus! (${rideCount.get(player.id) || 0} rides)` : 'Start Over (or drink & quit)'}
+            {round.correct ? `You're Off the Bus! (${player ? rideCount.get(player.id) || 0 : 0} rides)` : 'Start Over (or drink & quit)'}
           </Button>
         )}
 
-        {/* Ride count tracker */}
-        <div className="mt-8 pt-6 border-t border-slate-600">
-          <h3 className="text-sm text-slate-400 text-center mb-3">Bus Rides Completed</h3>
-          <div className="space-y-2">
-            {players.map(p => (
-              <div key={p.id} className="flex justify-between items-center text-sm">
-                <span className={p.id === player.id ? 'text-white font-bold' : 'text-slate-400'}>
-                  {p.name}
-                </span>
-                <span className="text-pink-400 font-bold">
-                  {rideCount.get(p.id) || 0}
-                </span>
-              </div>
-            ))}
+        {/* Ride count tracker — only show when tracking players */}
+        {players.length > 0 && (
+          <div className="mt-8 pt-6 border-t border-slate-600">
+            <h3 className="text-sm text-slate-400 text-center mb-3">Bus Rides Completed</h3>
+            <div className="space-y-2">
+              {players.map(p => (
+                <div key={p.id} className="flex justify-between items-center text-sm">
+                  <span className={p.id === player?.id ? 'text-white font-bold' : 'text-slate-400'}>
+                    {p.name}
+                  </span>
+                  <span className="text-pink-400 font-bold">
+                    {rideCount.get(p.id) || 0}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </GameCard>
     </GameLayout>
   );

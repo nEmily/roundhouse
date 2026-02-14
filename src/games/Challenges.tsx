@@ -48,14 +48,14 @@ export function Challenges() {
     nextRound();
   };
 
-  if (!player || !challenge) return null;
+  if (!challenge) return null;
 
   const hasTimer = challenge.timeLimit !== undefined;
 
   return (
     <GameLayout
       round={currentRound}
-      playerName={player.name}
+      playerName={player?.name}
       gameMode="challenges"
     >
       <GameCard>

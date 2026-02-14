@@ -68,12 +68,12 @@ export function KingsCup() {
     return suit === '♥' || suit === '♦' ? 'text-red-500' : 'text-gray-900';
   };
 
-  if (!currentPlayer) return null;
+  // currentPlayer may be null when playing without names
 
   return (
     <GameLayout
       round={currentRound}
-      playerName={currentPlayer.name}
+      playerName={currentPlayer?.name}
       gameMode="kings-cup"
     >
       <GameCard>

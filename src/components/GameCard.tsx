@@ -82,10 +82,10 @@ interface GameLayoutProps {
 
 export function GameLayout({ children, round, playerName, gameMode }: GameLayoutProps) {
   return (
-    <div className="min-h-dvh bg-slate-900 text-slate-50 p-6 flex flex-col animate-fade-in safe-area-padding">
+    <div className="min-h-dvh bg-slate-900 text-slate-50 px-6 pt-8 pb-10 flex flex-col animate-fade-in safe-area-padding">
       {/* Header — right-padded to avoid Quit button overlap */}
       {(round || playerName || gameMode) && (
-        <div className="text-center mb-4 pr-16">
+        <div className="text-center mb-6 pr-16">
           {round && (
             <div className="text-sm text-slate-500 mb-1">
               Round {round}
@@ -105,7 +105,7 @@ export function GameLayout({ children, round, playerName, gameMode }: GameLayout
       )}
 
       {/* Content — biased upward, not true-centered */}
-      <div className="flex-1 flex items-start justify-center pt-[5vh]">
+      <div className="flex-1 flex items-start justify-center pt-[3vh]">
         <div className="w-full max-w-2xl">
           {children}
         </div>

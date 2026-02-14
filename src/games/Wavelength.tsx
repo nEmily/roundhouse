@@ -41,13 +41,14 @@ export function Wavelength() {
   };
 
   const handleClueGiverSubmit = () => {
-    setClueGiverName(player?.name || '');
+    setClueGiverName(player?.name || 'Clue Giver');
     setPhase('guess');
   };
 
   const handleGuess = (value: number) => {
-    if (!player || phase !== 'guess' || revealed) return;
-    setGuesses(new Map(guesses.set(player.id, value)));
+    if (phase !== 'guess' || revealed) return;
+    const id = player?.id || 'anonymous';
+    setGuesses(new Map(guesses.set(id, value)));
   };
 
   const handleReveal = () => {
@@ -58,9 +59,9 @@ export function Wavelength() {
     nextRound();
   };
 
-  if (!player || !spectrum) return null;
+  if (!spectrum) return null;
 
-  const allGuessed = guesses.size === players.length;
+  const allGuessed = players.length > 0 ? guesses.size === players.length : guesses.size > 0;
 
   // Clue giving phase
   if (phase === 'clue') {
@@ -142,7 +143,7 @@ export function Wavelength() {
                 type="range"
                 min="0"
                 max="100"
-                value={guesses.get(player.id) ?? 50}
+                value={guesses.get(player?.id || 'anonymous') ?? 50}
                 onChange={(e) => handleGuess(parseInt(e.target.value))}
                 className="w-full h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
@@ -155,19 +156,15 @@ export function Wavelength() {
 
             <div className="text-center mt-8 mb-6">
               <div className="text-4xl font-bold text-blue-400">
-                {guesses.get(player.id) ?? 50}%
+                {guesses.get(player?.id || 'anonymous') ?? 50}%
               </div>
               <p className="text-xs text-slate-400 mt-2">
-                {player.name}'s guess
+                Your guess
               </p>
             </div>
           </div>
 
-          <div className="text-center text-sm text-slate-400 mb-4">
-            {guesses.size} / {players.length} guessed
-          </div>
-
-          {guesses.has(player.id) && (
+          {guesses.has(player?.id || 'anonymous') && (
             <Button
               onClick={handleReveal}
               variant={allGuessed ? 'primary' : 'secondary'}

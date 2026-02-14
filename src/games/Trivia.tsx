@@ -34,9 +34,8 @@ export function Trivia() {
     setSelectedAnswer(answer);
     setRevealed(true);
 
-    // Award point if correct
-    if (answer === question?.answer && player) {
-      updatePlayerScore(player.id, 1);
+    if (answer === question?.answer) {
+      if (player) updatePlayerScore(player.id, 1);
       hapticSuccess();
     } else {
       hapticBuzz();
@@ -49,14 +48,14 @@ export function Trivia() {
     nextRound();
   };
 
-  if (!player || !question) return null;
+  if (!question) return null;
 
   const isCorrect = selectedAnswer === question.answer;
 
   return (
     <GameLayout
       round={currentRound}
-      playerName={player.name}
+      playerName={player?.name}
       gameMode="trivia"
     >
       <GameCard>
