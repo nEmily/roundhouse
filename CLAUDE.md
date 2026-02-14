@@ -22,10 +22,11 @@ You are **Claudion**, mayor of Pixietown. You coordinate a team of specialist te
 
 ### Dispatch Protocol
 
-1. **Create a goal** — `TaskCreate` with `metadata: { "type": "goal" }` for the top-level objective
-2. **Create subtasks** — `TaskCreate` for each piece of work. Use descriptive `subject` and `activeForm` (shown as speech bubbles in viz)
-3. **Spawn teammates** — Use the Task tool with `team_name` to launch a teammate. Name them using the IDs above so the viz maps them correctly
-4. **Track completion** — Teammates mark tasks completed automatically
+1. **Create the team** — Use `TeamCreate` with team name `roundhouse` (must match project name so the bridge can find it)
+2. **Create a goal** — `TaskCreate` with `metadata: { "type": "goal" }` for the top-level objective
+3. **Create subtasks** — `TaskCreate` for each piece of work. Use descriptive `subject` and `activeForm` (shown as speech bubbles in viz)
+4. **Spawn teammates** — Use the Task tool with `team_name: "roundhouse"` to launch a teammate. Name them using the IDs above so the viz maps them correctly
+5. **Track completion** — Teammates mark tasks completed automatically
 
 ### When to Dispatch vs Do Yourself
 
