@@ -139,7 +139,7 @@ export function Slevens() {
     return () => clearInterval(interval);
   }, [phase, timerDuration, bombExploded]);
 
-  if (!player) return null;
+  // player may be null when playing without names
 
   const sum = dice1 + dice2;
   const isDoubles = dice1 === dice2;
@@ -157,7 +157,7 @@ export function Slevens() {
   return (
     <GameLayout
       round={currentRound}
-      playerName={player.name}
+      playerName={player?.name}
       gameMode="slevens"
     >
       {/* Settings Toggle */}
@@ -265,21 +265,35 @@ export function Slevens() {
           <p className="text-center text-slate-400 mb-6">
             Mode: {mechanicMode === 'tap-frenzy' ? '⚡ Tap Frenzy' : '💣 Bomb Timer'}
           </p>
-          <div className="grid grid-cols-2 gap-3">
-            {players
-              .filter(p => p.id !== player.id)
-              .map(p => (
-                <Button
-                  key={p.id}
-                  onClick={() => selectVictim(p)}
-                  variant="danger"
-                  size="md"
-                  className="py-6"
-                >
-                  {p.name}
-                </Button>
-              ))}
-          </div>
+          {players.length > 1 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {players
+                .filter(p => p.id !== player?.id)
+                .map(p => (
+                  <Button
+                    key={p.id}
+                    onClick={() => selectVictim(p)}
+                    variant="danger"
+                    size="md"
+                    className="py-6"
+                  >
+                    {p.name}
+                  </Button>
+                ))}
+            </div>
+          ) : (
+            <>
+              <p className="text-center text-xl mb-8">Point at someone — they're your opponent!</p>
+              <Button
+                onClick={() => selectVictim({ id: 'victim', name: 'Victim', score: 0 })}
+                variant="danger"
+                size="lg"
+                className="w-full"
+              >
+                Let's Go!
+              </Button>
+            </>
+          )}
         </GameCard>
       )}
 

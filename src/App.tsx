@@ -169,7 +169,7 @@ function App() {
   }
 
   // Games that require named players for their mechanics
-  const PLAYER_REQUIRED_MODES: GameMode[] = ['liars-dice', 'slevens'];
+  const PLAYER_REQUIRED_MODES: GameMode[] = ['liars-dice'];
   const availableModes = players.length > 0
     ? ALL_GAME_MODES
     : ALL_GAME_MODES.filter(m => !PLAYER_REQUIRED_MODES.includes(m));
