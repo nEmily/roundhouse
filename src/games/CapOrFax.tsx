@@ -11,7 +11,7 @@ type VoteState = {
 
 export function CapOrFax() {
   const { intensity, getCurrentPlayer, players, updatePlayerScore, nextRound, currentRound } = useGame();
-  const [phase, setPhase] = useState<'instruction' | 'telling' | 'voting' | 'reveal'>('instruction');
+  const [phase, setPhase] = useState<'instruction' | 'voting' | 'reveal'>('instruction');
   const [instruction, setInstruction] = useState<'cap' | 'fax' | null>(null);
   const [prompt, setPrompt] = useState<typeof capOrFaxPrompts[0] | null>(null);
   const [votes, setVotes] = useState<VoteState[]>([]);
@@ -115,20 +115,6 @@ export function CapOrFax() {
 
           <Button onClick={handleDoneTelling} variant="primary" size="lg" className="w-full">
             Done Telling
-          </Button>
-        </GameCard>
-      )}
-
-      {phase === 'telling' && (
-        <GameCard>
-          <h2 className="text-3xl font-bold text-center mb-6">
-            {currentPlayer.name} is telling their story...
-          </h2>
-          <p className="text-xl text-center text-slate-400 mb-8">
-            Listen carefully!
-          </p>
-          <Button onClick={handleDoneTelling} variant="primary" size="lg" className="w-full">
-            Ready to Vote
           </Button>
         </GameCard>
       )}

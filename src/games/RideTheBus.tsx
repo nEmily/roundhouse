@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
 import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { hapticSuccess, hapticBuzz } from '../utils/haptics';
 
 // Card types and utilities
 type Suit = 'hearts' | 'diamonds' | 'clubs' | 'spades';
@@ -101,6 +102,9 @@ export function RideTheBus() {
 
     if (!correct && player) {
       updatePlayerScore(player.id, -1); // Drink penalty
+      hapticBuzz();
+    } else {
+      hapticSuccess();
     }
 
     setDeck(deck.slice(1));
@@ -125,6 +129,9 @@ export function RideTheBus() {
 
     if (!correct && player) {
       updatePlayerScore(player.id, -1);
+      hapticBuzz();
+    } else {
+      hapticSuccess();
     }
 
     setDeck(deck.slice(1));
@@ -152,6 +159,9 @@ export function RideTheBus() {
 
     if (!correct && player) {
       updatePlayerScore(player.id, -1);
+      hapticBuzz();
+    } else {
+      hapticSuccess();
     }
 
     setDeck(deck.slice(1));
@@ -174,8 +184,10 @@ export function RideTheBus() {
     if (correct && player) {
       updatePlayerScore(player.id, 3); // Bonus for completing the bus
       setRideCount(new Map(rideCount.set(player.id, (rideCount.get(player.id) || 0) + 1)));
+      hapticSuccess();
     } else if (player) {
       updatePlayerScore(player.id, -1);
+      hapticBuzz();
     }
 
     setDeck(deck.slice(1));
@@ -314,7 +326,7 @@ export function RideTheBus() {
             size="lg"
             className="w-full"
           >
-            {round.correct ? `You're Off the Bus! (${(rideCount.get(player.id) || 0) + 1} successful)` : 'Start Over (or drink & quit)'}
+            {round.correct ? `You're Off the Bus! (${rideCount.get(player.id) || 0} rides)` : 'Start Over (or drink & quit)'}
           </Button>
         )}
 

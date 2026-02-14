@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
 import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { hapticBuzz } from '../utils/haptics';
 
 type GamePhase = 'setup' | 'view-dice' | 'bidding' | 'reveal' | 'result';
 
@@ -30,6 +31,7 @@ export function LiarsDice() {
   const [draftValue, setDraftValue] = useState(1);
   const [revealed, setRevealed] = useState(false);
   const [winner, setWinner] = useState<string>('');
+  const [bidError, setBidError] = useState(false);
 
   const player = getCurrentPlayer();
 
@@ -82,11 +84,13 @@ export function LiarsDice() {
       const isHigher = draftQuantity > lastBid.quantity ||
         (draftQuantity === lastBid.quantity && draftValue > lastBid.value);
       if (!isHigher) {
-        alert('Bid must be higher! Increase quantity or value.');
+        setBidError(true);
+        setTimeout(() => setBidError(false), 2000);
         return;
       }
     }
 
+    setBidError(false);
     setBids(prev => [...prev, {
       playerId: currentBidder.id,
       playerName: currentBidder.name,
@@ -105,6 +109,7 @@ export function LiarsDice() {
   const handleCallLiar = () => {
     setPhase('reveal');
     setRevealed(true);
+    hapticBuzz();
 
     // Count all dice matching the bid value
     const totalCount = playerDice.reduce((sum, pd) => {
@@ -240,6 +245,12 @@ export function LiarsDice() {
               </div>
             </div>
           </div>
+
+          {bidError && (
+            <div className="text-red-400 text-center font-bold mb-4 animate-pop">
+              ⬆ Bid must be higher! Increase quantity or value.
+            </div>
+          )}
 
           <div className="flex flex-col gap-3">
             <Button onClick={handleMakeBid} variant="primary" size="lg" className="w-full">

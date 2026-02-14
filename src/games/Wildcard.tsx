@@ -35,6 +35,7 @@ export function Wildcard() {
   return (
     <GameLayout
       round={currentRound}
+      playerName={player.name}
       gameMode="wildcard"
     >
       <GameCard>

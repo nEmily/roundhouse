@@ -161,7 +161,10 @@ export function Slevens() {
       gameMode="slevens"
     >
       {/* Settings Toggle */}
-      <div className="absolute top-6 left-6">
+      {showSettings && (
+        <div className="fixed inset-0 z-40" onClick={() => setShowSettings(false)} />
+      )}
+      <div className="absolute top-6 left-6 z-50">
         <Button
           onClick={() => setShowSettings(!showSettings)}
           variant="secondary"

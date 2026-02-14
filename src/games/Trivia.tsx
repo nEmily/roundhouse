@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
 import { GameLayout, GameCard, Button } from '../components/GameCard';
 import { triviaQuestions } from '../data/trivia';
+import { hapticSuccess, hapticBuzz } from '../utils/haptics';
 
 export function Trivia() {
   const { intensity, getCurrentPlayer, nextRound, currentRound, updatePlayerScore } = useGame();
@@ -36,6 +37,9 @@ export function Trivia() {
     // Award point if correct
     if (answer === question?.answer && player) {
       updatePlayerScore(player.id, 1);
+      hapticSuccess();
+    } else {
+      hapticBuzz();
     }
   };
 
@@ -58,7 +62,7 @@ export function Trivia() {
       <GameCard>
         <div className="text-center mb-6">
           <div className="inline-block bg-slate-700 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide">
-            {question.category.replace('-', ' ')}
+            {question.category.replaceAll('-', ' ')}
           </div>
         </div>
 

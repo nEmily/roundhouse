@@ -58,6 +58,7 @@ export function HotSeat() {
   return (
     <GameLayout
       round={currentRound}
+      playerName={player.name}
       gameMode="hot-seat"
     >
       <GameCard>
