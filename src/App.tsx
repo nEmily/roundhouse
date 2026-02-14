@@ -14,7 +14,6 @@ import { Wavelength } from './games/Wavelength'
 import { HerdMentality } from './games/HerdMentality'
 import { CapOrFax } from './games/CapOrFax'
 import { KingsCup } from './games/KingsCup'
-import { LiarsDice } from './games/LiarsDice'
 import { RideTheBus } from './games/RideTheBus'
 import { Slevens } from './games/Slevens'
 import { GAME_NAMES } from './components/GameCard'
@@ -31,7 +30,6 @@ const ALL_GAME_MODES: GameMode[] = [
   'herd-mentality',
   'cap-or-fax',
   'kings-cup',
-  'liars-dice',
   'ride-the-bus',
   'slevens',
 ];
@@ -49,7 +47,6 @@ const GAME_INFO: Record<GameMode, { emoji: string; description: string }> = {
   'herd-mentality': { emoji: '🐑', description: 'Everyone shouts an answer. Match the majority or drink.' },
   'cap-or-fax': { emoji: '🧢', description: 'One player tells a story. Was it real (fax) or made up (cap)? Everyone votes.' },
   'kings-cup': { emoji: '👑', description: 'Draw cards, follow the rules. Classic drinking card game.' },
-  'liars-dice': { emoji: '🎲', description: 'Bluff about your dice rolls. Call out liars or get caught yourself.' },
   'ride-the-bus': { emoji: '🚌', description: 'Guess the card — higher/lower, red/black, in/out. Wrong = drink.' },
   'slevens': { emoji: '⚡', description: 'Roll dice — hit 7, 11, or doubles and race your opponent. Loser drinks.' },
 };
@@ -168,11 +165,7 @@ function App() {
     );
   }
 
-  // Games that require named players for their mechanics
-  const PLAYER_REQUIRED_MODES: GameMode[] = ['liars-dice'];
-  const availableModes = players.length > 0
-    ? ALL_GAME_MODES
-    : ALL_GAME_MODES.filter(m => !PLAYER_REQUIRED_MODES.includes(m));
+  const availableModes = ALL_GAME_MODES;
 
   // Round intro - pick a game
   if (screen === 'round-intro') {
@@ -295,7 +288,6 @@ function App() {
         case 'herd-mentality': return <HerdMentality />;
         case 'cap-or-fax': return <CapOrFax />;
         case 'kings-cup': return <KingsCup />;
-        case 'liars-dice': return <LiarsDice />;
         case 'ride-the-bus': return <RideTheBus />;
         case 'slevens': return <Slevens />;
         default: return null;

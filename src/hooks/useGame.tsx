@@ -40,7 +40,6 @@ const GAME_MODES: GameMode[] = [
   'herd-mentality',
   'cap-or-fax',
   'kings-cup',
-  'liars-dice',
   'ride-the-bus',
   'slevens',
 ];

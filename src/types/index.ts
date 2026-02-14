@@ -12,7 +12,6 @@ export type GameMode =
   | 'herd-mentality'
   | 'cap-or-fax'
   | 'kings-cup'
-  | 'liars-dice'
   | 'ride-the-bus'
   | 'slevens';
 
@@ -72,10 +71,6 @@ export interface KingsCupCard {
   rule: string;
   explanation: string;
   intensity: IntensityLevel;
-}
-
-export interface LiarsDicePrompt extends Prompt {
-  // Minimal prompt for dice game instructions
 }
 
 export interface RideTheBusPrompt extends Prompt {

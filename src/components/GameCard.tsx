@@ -12,7 +12,6 @@ export const GAME_NAMES: Record<string, string> = {
   'herd-mentality': 'Herd Mentality',
   'cap-or-fax': 'Cap or Fax',
   'kings-cup': 'Kings Cup',
-  'liars-dice': 'Liars Dice',
   'ride-the-bus': 'Ride the Bus',
   'slevens': 'Slevens',
 };
