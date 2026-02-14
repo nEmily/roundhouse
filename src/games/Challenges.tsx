@@ -27,7 +27,7 @@ export function Challenges() {
     setChallenge(random);
     setUsedChallengeIds(prev => new Set(prev).add(randomIdx));
     setTimer(random.timeLimit || null);
-  }, [intensity]);
+  }, [intensity, currentRound]);
 
   // Auto-start timer when challenge loads
   useEffect(() => {

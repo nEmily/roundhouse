@@ -23,7 +23,7 @@ export function HotTakes() {
     const randomIdx = hotTakesPrompts.findIndex(h => h === random);
     setHotTake(random);
     setUsedHotTakeIds(prev => new Set(prev).add(randomIdx));
-  }, [intensity]);
+  }, [intensity, currentRound]);
 
   const handleNext = () => {
     nextTurn();

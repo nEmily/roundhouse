@@ -23,7 +23,7 @@ export function HotSeat() {
     const randomIdx = hotSeatPrompts.findIndex(p => p === random);
     setPrompt(random);
     setUsedPromptIds(prev => new Set(prev).add(randomIdx));
-  }, [intensity]);
+  }, [intensity, currentRound]);
 
   const handleNext = () => {
     nextTurn();

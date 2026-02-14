@@ -25,7 +25,7 @@ export function Wildcard() {
     const randomIdx = wildcardPrompts.findIndex(w => w === random);
     setPrompt(random);
     setUsedPromptIds(prev => new Set(prev).add(randomIdx));
-  }, [intensity]);
+  }, [intensity, currentRound]);
 
   const handleNext = () => {
     nextTurn();

@@ -28,7 +28,7 @@ export function Trivia() {
     const randomIdx = triviaQuestions.findIndex(q => q === random);
     setQuestion(random);
     setUsedQuestionIds(prev => new Set(prev).add(randomIdx));
-  }, [intensity]);
+  }, [intensity, currentRound]);
 
   const handleAnswer = (answer: string) => {
     if (revealed) return;
