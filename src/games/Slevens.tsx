@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
 import { GameLayout, GameCard, Button } from '../components/GameCard';
-import { hapticBuzz } from '../utils/haptics';
 
-type GamePhase = 'ready' | 'rolling' | 'result' | 'choose-victim' | 'tap-frenzy' | 'bomb-timer';
-type MechanicMode = 'tap-frenzy' | 'bomb-timer';
+type GamePhase = 'ready' | 'rolling' | 'result' | 'choose-victim' | 'tap-frenzy';
 
 export function Slevens() {
   const { players, getCurrentPlayer, nextRound, currentRound, nextPlayer } = useGame();
@@ -13,19 +11,11 @@ export function Slevens() {
   const [dice2, setDice2] = useState(1);
   const [isRolling, setIsRolling] = useState(false);
   const [victim, setVictim] = useState<typeof players[0] | null>(null);
-  const [mechanicMode, setMechanicMode] = useState<MechanicMode>('tap-frenzy');
-  const [showSettings, setShowSettings] = useState(false);
 
   // Tap Frenzy state
   const [rollerTaps, setRollerTaps] = useState(0);
   const [victimTaps, setVictimTaps] = useState(0);
   const TARGET_TAPS = 20;
-
-  // Bomb Timer state
-  const [timerDuration, setTimerDuration] = useState(0);
-  const [timeElapsed, setTimeElapsed] = useState(0);
-  const [bombExploded, setBombExploded] = useState(false);
-  const [victimSafe, setVictimSafe] = useState(false);
 
   const player = getCurrentPlayer();
 
@@ -69,19 +59,9 @@ export function Slevens() {
 
   const selectVictim = (selectedPlayer: typeof players[0]) => {
     setVictim(selectedPlayer);
-
-    if (mechanicMode === 'tap-frenzy') {
-      setRollerTaps(0);
-      setVictimTaps(0);
-      setPhase('tap-frenzy');
-    } else {
-      const duration = Math.floor(Math.random() * 9000) + 3000; // 3-12 seconds
-      setTimerDuration(duration);
-      setTimeElapsed(0);
-      setBombExploded(false);
-      setVictimSafe(false);
-      setPhase('bomb-timer');
-    }
+    setRollerTaps(0);
+    setVictimTaps(0);
+    setPhase('tap-frenzy');
   };
 
   const handleRollerTap = () => {
@@ -102,12 +82,6 @@ export function Slevens() {
     }
   };
 
-  const handleBombDone = () => {
-    if (phase !== 'bomb-timer' || bombExploded) return;
-    setVictimSafe(true);
-    setTimeout(() => endRound(), 1500);
-  };
-
   const endRound = () => {
     setPhase('ready');
     setVictim(null);
@@ -120,39 +94,11 @@ export function Slevens() {
     nextRound();
   };
 
-  // Bomb timer effect
-  useEffect(() => {
-    if (phase !== 'bomb-timer') return;
-
-    const interval = setInterval(() => {
-      setTimeElapsed(prev => {
-        const next = prev + 100;
-        if (next >= timerDuration && !bombExploded) {
-          setBombExploded(true);
-          hapticBuzz();
-          setTimeout(() => endRound(), 1500);
-        }
-        return next;
-      });
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [phase, timerDuration, bombExploded]);
-
   // player may be null when playing without names
 
   const sum = dice1 + dice2;
   const isDoubles = dice1 === dice2;
   const isHit = sum === 7 || sum === 11 || isDoubles;
-
-  // Bomb timer color based on progress
-  const getBombColor = () => {
-    const progress = timeElapsed / timerDuration;
-    if (progress < 0.25) return 'bg-green-500';
-    if (progress < 0.5) return 'bg-yellow-500';
-    if (progress < 0.75) return 'bg-orange-500';
-    return 'bg-red-500';
-  };
 
   return (
     <GameLayout
@@ -160,48 +106,6 @@ export function Slevens() {
       playerName={player?.name}
       gameMode="slevens"
     >
-      {/* Settings Toggle */}
-      {showSettings && (
-        <div className="fixed inset-0 z-40" onClick={() => setShowSettings(false)} />
-      )}
-      <div className="absolute top-6 left-6 z-50">
-        <Button
-          onClick={() => setShowSettings(!showSettings)}
-          variant="secondary"
-          size="sm"
-          className="!p-3 !rounded-full !text-2xl"
-        >
-          ⚙️
-        </Button>
-        {showSettings && (
-          <div className="absolute top-14 left-0 bg-slate-800 rounded-xl p-4 shadow-xl min-w-[200px]">
-            <div className="text-sm font-bold mb-3">Game Mechanic</div>
-            <Button
-              onClick={() => {
-                setMechanicMode('tap-frenzy');
-                setShowSettings(false);
-              }}
-              variant={mechanicMode === 'tap-frenzy' ? 'primary' : 'secondary'}
-              size="sm"
-              className="w-full mb-2 !text-left"
-            >
-              ⚡ Tap Frenzy
-            </Button>
-            <Button
-              onClick={() => {
-                setMechanicMode('bomb-timer');
-                setShowSettings(false);
-              }}
-              variant={mechanicMode === 'bomb-timer' ? 'primary' : 'secondary'}
-              size="sm"
-              className="w-full !text-left"
-            >
-              💣 Bomb Timer
-            </Button>
-          </div>
-        )}
-      </div>
-
       {/* Ready Phase */}
       {phase === 'ready' && (
         <GameCard>
@@ -261,10 +165,7 @@ export function Slevens() {
       {/* Choose Victim Phase */}
       {phase === 'choose-victim' && (
         <GameCard>
-          <h2 className="text-3xl font-bold text-center mb-2">Choose Your Victim!</h2>
-          <p className="text-center text-slate-400 mb-6">
-            Mode: {mechanicMode === 'tap-frenzy' ? '⚡ Tap Frenzy' : '💣 Bomb Timer'}
-          </p>
+          <h2 className="text-3xl font-bold text-center mb-6">Choose Your Victim!</h2>
           {players.length > 1 ? (
             <div className="grid grid-cols-2 gap-3">
               {players
@@ -353,40 +254,6 @@ export function Slevens() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Bomb Timer Phase */}
-      {phase === 'bomb-timer' && victim && (
-        <GameCard>
-          <div className="text-center">
-            <div className="text-3xl font-bold mb-2">💣 BOMB TIMER 💣</div>
-            <div className="text-xl text-slate-400 mb-8">
-              {victim.name} — Drink and tap "DONE"!
-            </div>
-
-            <div
-              className={`${victimSafe ? 'bg-green-500' : bombExploded ? 'bg-red-600 animate-pulse' : getBombColor()} rounded-3xl p-16 mb-8 transition-all duration-300 transition-colors`}
-            >
-              {victimSafe ? (
-                <div className="text-white text-8xl font-bold">✅</div>
-              ) : !bombExploded ? (
-                <div className="text-white text-8xl font-bold animate-pulse">💣</div>
-              ) : (
-                <div className="text-white text-8xl font-bold">💥</div>
-              )}
-            </div>
-
-            {victimSafe ? (
-              <div className="text-4xl font-bold text-green-400 mb-4">SAFE! Nice chug!</div>
-            ) : !bombExploded ? (
-              <Button onClick={handleBombDone} variant="success" size="lg" className="w-full">
-                ✓ DONE!
-              </Button>
-            ) : (
-              <div className="text-4xl font-bold text-red-400 mb-4">BOOM! Penalty!</div>
-            )}
-          </div>
-        </GameCard>
       )}
 
       {/* Next Round Button (always available) */}

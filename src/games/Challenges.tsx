@@ -7,7 +7,6 @@ export function Challenges() {
   const { intensity, getCurrentPlayer, nextRound, currentRound } = useGame();
   const [challenge, setChallenge] = useState<typeof challengesPrompts[0] | null>(null);
   const [timer, setTimer] = useState<number | null>(null);
-  const [isRunning, setIsRunning] = useState(false);
   const [usedChallengeIds, setUsedChallengeIds] = useState<Set<number>>(new Set());
 
   const player = getCurrentPlayer();
@@ -26,31 +25,21 @@ export function Challenges() {
     const randomIdx = challengesPrompts.findIndex(c => c === random);
     setChallenge(random);
     setUsedChallengeIds(prev => new Set(prev).add(randomIdx));
-    setIsRunning(false);
     setTimer(random.timeLimit || null);
   }, [intensity]);
 
+  // Auto-start timer when challenge loads
   useEffect(() => {
-    if (!isRunning || timer === null || timer <= 0) return;
+    if (timer === null || timer <= 0) return;
 
     const interval = setInterval(() => {
       setTimer(t => (t !== null && t > 0 ? t - 1 : t));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, timer]);
-
-  const handleStart = () => {
-    setIsRunning(true);
-  };
-
-  const handleComplete = () => {
-    nextRound();
-  };
+  }, [timer]);
 
   if (!challenge) return null;
-
-  const hasTimer = challenge.timeLimit !== undefined;
 
   return (
     <GameLayout
@@ -69,7 +58,7 @@ export function Challenges() {
           {challenge.challenge}
         </p>
 
-        {hasTimer && timer !== null && (
+        {timer !== null && (
           <div className="text-center mb-8">
             <div className={`text-6xl font-bold ${timer <= 5 ? 'text-red-400 animate-pulse' : 'text-pink-400'}`}>
               {timer}s
@@ -77,23 +66,14 @@ export function Challenges() {
           </div>
         )}
 
-        <div className="flex flex-col gap-3">
-          {hasTimer && !isRunning && (
-            <Button onClick={handleStart} variant="success" size="lg" className="w-full">
-              Start Timer
-            </Button>
-          )}
-
-          <Button
-            onClick={handleComplete}
-            variant="primary"
-            size="lg"
-            className="w-full"
-            disabled={hasTimer && !isRunning}
-          >
-            {hasTimer ? 'Challenge Complete!' : 'Done'}
-          </Button>
-        </div>
+        <Button
+          onClick={() => nextRound()}
+          variant="primary"
+          size="lg"
+          className="w-full"
+        >
+          Next Round
+        </Button>
       </GameCard>
     </GameLayout>
   );
