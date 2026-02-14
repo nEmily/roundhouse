@@ -4,10 +4,11 @@ import { GameLayout, GameCard, Button } from '../components/GameCard';
 import { truthOrDarePrompts } from '../data/truth-or-dare';
 
 export function TruthOrDare() {
-  const { intensity, getCurrentPlayer, nextRound, currentRound } = useGame();
+  const { intensity, getCurrentPlayer, nextTurn, currentRound, players } = useGame();
   const [choice, setChoice] = useState<'truth' | 'dare' | null>(null);
   const [prompt, setPrompt] = useState<typeof truthOrDarePrompts[0] | null>(null);
   const [usedPromptIds, setUsedPromptIds] = useState<Set<number>>(new Set());
+  const [showingPass, setShowingPass] = useState(false);
 
   const player = getCurrentPlayer();
 
@@ -37,10 +38,34 @@ export function TruthOrDare() {
   const handleNext = () => {
     setChoice(null);
     setPrompt(null);
-    nextRound();
+    // Rotate player + bump round, stay in this game
+    nextTurn();
+    // Show pass screen if there are players, otherwise go straight to next pick
+    if (players.length > 0) {
+      setShowingPass(true);
+    }
   };
 
-  // player may be null when playing without names
+  // Inline pass-phone screen between rounds
+  if (showingPass) {
+    return (
+      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
+        <div className="text-center max-w-2xl w-full">
+          <div className="text-5xl mb-6">📱</div>
+          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
+          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
+            {player?.name}!
+          </div>
+          <button
+            onClick={() => setShowingPass(false)}
+            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
+          >
+            Ready
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <GameLayout
@@ -75,7 +100,7 @@ export function TruthOrDare() {
           </p>
 
           <Button onClick={handleNext} variant="primary" size="lg" className="w-full">
-            Next Round
+            Next
           </Button>
         </GameCard>
       )}

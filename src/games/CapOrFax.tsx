@@ -5,11 +5,12 @@ import { capOrFaxPrompts } from '../data/cap-or-fax';
 import { hapticSuccess } from '../utils/haptics';
 
 export function CapOrFax() {
-  const { intensity, getCurrentPlayer, nextRound, currentRound } = useGame();
+  const { intensity, getCurrentPlayer, nextTurn, currentRound, players } = useGame();
   const [phase, setPhase] = useState<'instruction' | 'reveal'>('instruction');
   const [instruction, setInstruction] = useState<'cap' | 'fax' | null>(null);
   const [prompt, setPrompt] = useState<typeof capOrFaxPrompts[0] | null>(null);
   const [usedPromptIds, setUsedPromptIds] = useState<Set<number>>(new Set());
+  const [showingPass, setShowingPass] = useState(false);
 
   const currentPlayer = getCurrentPlayer();
 
@@ -41,7 +42,10 @@ export function CapOrFax() {
     setPhase('instruction');
     setInstruction(null);
     setPrompt(null);
-    nextRound();
+    nextTurn();
+    if (players.length > 0) {
+      setShowingPass(true);
+    }
   };
 
   // Initial start
@@ -50,6 +54,26 @@ export function CapOrFax() {
   }
 
   if (!prompt || !instruction) return null;
+
+  if (showingPass) {
+    return (
+      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
+        <div className="text-center max-w-2xl w-full">
+          <div className="text-5xl mb-6">📱</div>
+          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
+          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
+            {currentPlayer?.name}!
+          </div>
+          <button
+            onClick={() => setShowingPass(false)}
+            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
+          >
+            Ready
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <GameLayout
@@ -113,7 +137,7 @@ export function CapOrFax() {
           </div>
 
           <Button onClick={handleNext} variant="primary" size="lg" className="w-full">
-            Next Round
+            Next
           </Button>
         </GameCard>
       )}

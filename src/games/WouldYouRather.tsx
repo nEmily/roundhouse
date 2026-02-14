@@ -4,9 +4,10 @@ import { GameLayout, GameCard, Button } from '../components/GameCard';
 import { wouldYouRatherPrompts } from '../data/would-you-rather';
 
 export function WouldYouRather() {
-  const { intensity, getCurrentPlayer, nextRound, currentRound } = useGame();
+  const { intensity, getCurrentPlayer, nextTurn, currentRound, players } = useGame();
   const [prompt, setPrompt] = useState<typeof wouldYouRatherPrompts[0] | null>(null);
   const [usedPromptIds, setUsedPromptIds] = useState<Set<number>>(new Set());
+  const [showingPass, setShowingPass] = useState(false);
 
   const player = getCurrentPlayer();
 
@@ -24,7 +25,34 @@ export function WouldYouRather() {
     setUsedPromptIds(prev => new Set(prev).add(randomIdx));
   }, [intensity]);
 
+  const handleNext = () => {
+    nextTurn();
+    if (players.length > 0) {
+      setShowingPass(true);
+    }
+  };
+
   if (!prompt) return null;
+
+  if (showingPass) {
+    return (
+      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
+        <div className="text-center max-w-2xl w-full">
+          <div className="text-5xl mb-6">📱</div>
+          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
+          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
+            {player?.name}!
+          </div>
+          <button
+            onClick={() => setShowingPass(false)}
+            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
+          >
+            Ready
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <GameLayout
@@ -38,16 +66,16 @@ export function WouldYouRather() {
         </h2>
 
         <div className="space-y-4 mb-10">
-          <div className="bg-gradient-to-br from-pink-500/20 to-pink-600/20 border-2 border-pink-500/30 rounded-2xl p-6">
-            <p className="text-xl md:text-2xl font-bold text-center text-pink-300">
+          <div className="bg-gradient-to-br from-amber-500/20 to-amber-600/20 border-2 border-amber-500/30 rounded-2xl p-6">
+            <p className="text-xl md:text-2xl font-bold text-center text-amber-300">
               {prompt.optionA}
             </p>
           </div>
 
           <div className="text-center text-2xl font-bold text-slate-500">OR</div>
 
-          <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-2 border-purple-500/30 rounded-2xl p-6">
-            <p className="text-xl md:text-2xl font-bold text-center text-purple-300">
+          <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 border-2 border-orange-500/30 rounded-2xl p-6">
+            <p className="text-xl md:text-2xl font-bold text-center text-orange-300">
               {prompt.optionB}
             </p>
           </div>
@@ -58,8 +86,8 @@ export function WouldYouRather() {
           <p className="text-base text-slate-300">Minority drinks 🍺</p>
         </div>
 
-        <Button onClick={() => nextRound()} variant="primary" size="lg" className="w-full">
-          Next Round
+        <Button onClick={handleNext} variant="primary" size="lg" className="w-full">
+          Next
         </Button>
       </GameCard>
     </GameLayout>

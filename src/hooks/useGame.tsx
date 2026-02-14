@@ -11,6 +11,7 @@ interface GameContextType extends GameState {
   // Game flow
   startGame: () => void;
   nextRound: () => void;
+  nextTurn: () => void;
   switchGame: () => void;
   selectGameMode: (mode?: GameMode, enabledModes?: GameMode[]) => void;
   nextPlayer: () => void;
@@ -202,6 +203,21 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Advance round + player without navigating away — for games that loop internally
+  const nextTurn = useCallback(() => {
+    setState(prev => {
+      const nextRoundNum = prev.currentRound + 1;
+      return {
+        ...prev,
+        currentRound: nextRoundNum,
+        currentPlayerIndex: prev.players.length > 0
+          ? (prev.currentPlayerIndex + 1) % prev.players.length
+          : 0,
+        intensity: calculateIntensity(nextRoundNum),
+      };
+    });
+  }, []);
+
   const switchGame = useCallback(() => {
     if (!handlingPopState.current) {
       history.pushState({ screen: 'round-intro' }, '', '');
@@ -277,6 +293,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     updatePlayerScore,
     startGame,
     nextRound,
+    nextTurn,
     switchGame,
     selectGameMode,
     nextPlayer,

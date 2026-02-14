@@ -63,7 +63,7 @@ interface RoundState {
 }
 
 export function RideTheBus() {
-  const { intensity, players, getCurrentPlayer, nextRound, currentRound, updatePlayerScore } = useGame();
+  const { intensity, players, getCurrentPlayer, nextTurn, currentRound, updatePlayerScore } = useGame();
   const [deck, setDeck] = useState<Card[]>(createDeck());
   const [round, setRound] = useState<RoundState>({
     cards: [],
@@ -72,6 +72,7 @@ export function RideTheBus() {
   });
   const [rideCount, setRideCount] = useState<Map<string, number>>(new Map());
   const [gameStarted, setGameStarted] = useState(false);
+  const [showingPass, setShowingPass] = useState(false);
 
   const player = getCurrentPlayer();
 
@@ -196,7 +197,15 @@ export function RideTheBus() {
   const handleNext = () => {
     if (round.correct) {
       // Successfully got off the bus
-      nextRound();
+      setRound({
+        cards: [],
+        phase: 'red-or-black',
+        revealed: false,
+      });
+      nextTurn();
+      if (players.length > 0) {
+        setShowingPass(true);
+      }
     } else {
       // Failed, reset round
       setRound({
@@ -208,6 +217,26 @@ export function RideTheBus() {
   };
 
   if (!gameStarted) return null;
+
+  if (showingPass) {
+    return (
+      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
+        <div className="text-center max-w-2xl w-full">
+          <div className="text-5xl mb-6">📱</div>
+          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
+          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
+            {player?.name}!
+          </div>
+          <button
+            onClick={() => setShowingPass(false)}
+            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
+          >
+            Ready
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const isRedBlackPhase = round.phase === 'red-or-black' && !round.revealed;
   const isHigherLowerPhase = round.phase === 'higher-or-lower' && !round.revealed;
@@ -233,7 +262,7 @@ export function RideTheBus() {
                 num < currentPhaseNum
                   ? 'bg-green-600 text-white'
                   : num === currentPhaseNum
-                  ? 'bg-pink-600 text-white'
+                  ? 'bg-amber-600 text-white'
                   : 'bg-slate-700 text-slate-400'
               }`}
             >
@@ -340,7 +369,7 @@ export function RideTheBus() {
                   <span className={p.id === player?.id ? 'text-white font-bold' : 'text-slate-400'}>
                     {p.name}
                   </span>
-                  <span className="text-pink-400 font-bold">
+                  <span className="text-amber-400 font-bold">
                     {rideCount.get(p.id) || 0}
                   </span>
                 </div>
