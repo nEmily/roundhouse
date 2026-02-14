@@ -1,5 +1,22 @@
 import type { ReactNode } from 'react';
 
+export const GAME_NAMES: Record<string, string> = {
+  'truth-or-dare': 'Truth or Dare',
+  'hot-seat': 'Hot Seat',
+  'trivia': 'Trivia',
+  'would-you-rather': 'Would You Rather',
+  'challenges': 'Challenges',
+  'hot-takes': 'Hot Takes',
+  'wildcard': 'Wildcard',
+  'wavelength': 'Wavelength',
+  'herd-mentality': 'Herd Mentality',
+  'cap-or-fax': 'Cap or Fax',
+  'kings-cup': 'Kings Cup',
+  'liars-dice': 'Liars Dice',
+  'ride-the-bus': 'Ride the Bus',
+  'slevens': 'Slevens',
+};
+
 interface GameCardProps {
   children: ReactNode;
   className?: string;
@@ -66,29 +83,29 @@ interface GameLayoutProps {
 export function GameLayout({ children, round, playerName, gameMode }: GameLayoutProps) {
   return (
     <div className="min-h-dvh bg-slate-900 text-slate-50 p-6 flex flex-col animate-fade-in safe-area-padding">
-      {/* Header */}
+      {/* Header — right-padded to avoid Quit button overlap */}
       {(round || playerName || gameMode) && (
-        <div className="text-center mb-6">
+        <div className="text-center mb-4 pr-16">
           {round && (
             <div className="text-sm text-slate-500 mb-1">
               Round {round}
             </div>
           )}
           {gameMode && (
-            <div className="text-3xl font-bold capitalize mb-2">
-              {gameMode.replaceAll('-', ' ')}
+            <div className="text-2xl font-bold mb-1">
+              {GAME_NAMES[gameMode] || gameMode.replaceAll('-', ' ')}
             </div>
           )}
           {playerName && (
-            <div className="text-xl text-pink-400">
+            <div className="text-lg text-pink-400">
               {playerName}'s turn
             </div>
           )}
         </div>
       )}
 
-      {/* Content */}
-      <div className="flex-1 flex items-center justify-center">
+      {/* Content — biased upward, not true-centered */}
+      <div className="flex-1 flex items-start justify-center pt-[5vh]">
         <div className="w-full max-w-2xl">
           {children}
         </div>

@@ -10,6 +10,7 @@ export function Wavelength() {
   const [guesses, setGuesses] = useState<Map<string, number>>(new Map());
   const [revealed, setRevealed] = useState(false);
   const [phase, setPhase] = useState<'clue' | 'guess' | 'reveal'>('clue');
+  const [clueGiverName, setClueGiverName] = useState<string>('');
   const sliderRef = useRef<HTMLInputElement>(null);
   const [usedSpectrumIds, setUsedSpectrumIds] = useState<Set<number>>(new Set());
 
@@ -40,6 +41,7 @@ export function Wavelength() {
   };
 
   const handleClueGiverSubmit = () => {
+    setClueGiverName(player?.name || '');
     setPhase('guess');
   };
 
@@ -131,7 +133,7 @@ export function Wavelength() {
 
           <div className="bg-slate-800 rounded-xl p-8 mb-8">
             <div className="text-center mb-6">
-              <p className="text-sm text-slate-400 mb-2">{players[0].name} placed it at:</p>
+              <p className="text-sm text-slate-400 mb-2">{clueGiverName} placed it at:</p>
               <p className="text-sm text-slate-500">(Clue was one word, shouted aloud)</p>
             </div>
 
@@ -248,7 +250,7 @@ export function Wavelength() {
 
           <div className="mt-20 pt-8 space-y-4">
             <div className="flex justify-between items-center bg-slate-700 px-6 py-3 rounded-lg">
-              <span className="text-sm font-medium">{players[0].name} (Clue Giver)</span>
+              <span className="text-sm font-medium">{clueGiverName} (Clue Giver)</span>
               <span className="text-pink-400 font-bold">{clueGiverPlacement}%</span>
             </div>
 

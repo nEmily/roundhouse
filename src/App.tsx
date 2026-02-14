@@ -17,6 +17,7 @@ import { KingsCup } from './games/KingsCup'
 import { LiarsDice } from './games/LiarsDice'
 import { RideTheBus } from './games/RideTheBus'
 import { Slevens } from './games/Slevens'
+import { GAME_NAMES } from './components/GameCard'
 
 const ALL_GAME_MODES: GameMode[] = [
   'truth-or-dare',
@@ -35,22 +36,6 @@ const ALL_GAME_MODES: GameMode[] = [
   'slevens',
 ];
 
-const GAME_NAMES: Record<GameMode, string> = {
-  'truth-or-dare': 'Truth or Dare',
-  'hot-seat': 'Hot Seat',
-  'trivia': 'Trivia',
-  'would-you-rather': 'Would You Rather',
-  'challenges': 'Challenges',
-  'hot-takes': 'Hot Takes',
-  'wildcard': 'Wildcard',
-  'wavelength': 'Wavelength',
-  'herd-mentality': 'Herd Mentality',
-  'cap-or-fax': 'Cap or Fax',
-  'kings-cup': 'Kings Cup',
-  'liars-dice': 'Liars Dice',
-  'ride-the-bus': 'Ride the Bus',
-  'slevens': 'Slevens',
-};
 
 const GAME_INFO: Record<GameMode, { emoji: string; description: string }> = {
   'truth-or-dare': { emoji: '🤫', description: 'Pick truth or dare — answer honestly or complete a challenge.' },
@@ -118,6 +103,12 @@ function App() {
     return (
       <div className="min-h-dvh bg-slate-900 text-slate-50 p-6 safe-area-padding animate-fade-in">
         <div className="max-w-2xl mx-auto">
+          <button
+            onClick={() => setScreen('welcome')}
+            className="text-slate-400 hover:text-white text-lg mb-4 active:scale-95 transition-colors"
+          >
+            ← Back
+          </button>
           <h2 className="text-4xl font-bold mb-2 text-center">Who's Playing?</h2>
           <p className="text-slate-400 text-center mb-8">Add at least 3 players</p>
 
@@ -141,9 +132,9 @@ function App() {
             />
             <button
               type="submit"
-              className="w-full bg-slate-700 text-white font-bold text-xl px-6 py-4 rounded-xl hover:bg-slate-600 transition-colors active:scale-95"
+              className="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold text-xl px-6 py-4 rounded-xl transition-colors active:scale-95"
             >
-              Add Player
+              + Add Player
             </button>
           </form>
 
@@ -226,7 +217,7 @@ function App() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-2 scroll-fade max-h-[45vh] overflow-y-auto">
+          <div className="grid grid-cols-2 gap-2 scroll-fade max-h-[55vh] overflow-y-auto">
             {ALL_GAME_MODES.map(mode => (
               <button
                 key={mode}
@@ -306,8 +297,8 @@ function App() {
         {/* Quit / Switch Game button */}
         <button
           onClick={switchGame}
-          className="fixed top-4 right-4 z-50 bg-slate-800/90 backdrop-blur text-slate-400 hover:text-white text-sm font-medium px-4 py-2 rounded-full transition-all active:scale-95"
-          style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))' }}
+          className="fixed right-4 z-50 bg-slate-800/90 backdrop-blur text-slate-400 hover:text-white text-sm font-medium px-4 py-2 rounded-full transition-all active:scale-95"
+          style={{ top: 'max(1rem, calc(env(safe-area-inset-top) + 0.5rem))' }}
         >
           ✕ Quit
         </button>
@@ -330,7 +321,7 @@ function App() {
               {sortedPlayers.map((player, index) => (
                 <div key={player.id} className="flex justify-between items-center">
                   <span className="text-xl">
-                    {index === 0 && '🏆 '}
+                    {index === 0 && sortedPlayers[0].score > 0 && '🏆 '}
                     {player.name}
                   </span>
                   <span className="text-2xl font-bold text-pink-400">{player.score}</span>
