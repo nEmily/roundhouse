@@ -35,6 +35,23 @@ const ALL_GAME_MODES: GameMode[] = [
   'slevens',
 ];
 
+const GAME_NAMES: Record<GameMode, string> = {
+  'truth-or-dare': 'Truth or Dare',
+  'hot-seat': 'Hot Seat',
+  'trivia': 'Trivia',
+  'would-you-rather': 'Would You Rather',
+  'challenges': 'Challenges',
+  'hot-takes': 'Hot Takes',
+  'wildcard': 'Wildcard',
+  'wavelength': 'Wavelength',
+  'herd-mentality': 'Herd Mentality',
+  'cap-or-fax': 'Cap or Fax',
+  'kings-cup': 'Kings Cup',
+  'liars-dice': 'Liars Dice',
+  'ride-the-bus': 'Ride the Bus',
+  'slevens': 'Slevens',
+};
+
 const GAME_INFO: Record<GameMode, { emoji: string; description: string }> = {
   'truth-or-dare': { emoji: '🤫', description: 'Pick truth or dare — answer honestly or complete a challenge.' },
   'hot-seat': { emoji: '🔥', description: 'One player in the spotlight. Group votes on "most likely to" and "who would" questions.' },
@@ -191,7 +208,7 @@ function App() {
           {selectedMode && selected && (
             <div className="bg-slate-800 rounded-2xl p-5 mb-4 animate-fade-in">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xl font-bold capitalize">{selected.emoji} {selectedMode.replaceAll('-', ' ')}</h3>
+                <h3 className="text-xl font-bold">{selected.emoji} {GAME_NAMES[selectedMode]}</h3>
                 <button
                   onClick={() => setSelectedMode(null)}
                   className="text-slate-500 hover:text-white text-lg px-2"
@@ -204,7 +221,7 @@ function App() {
                 onClick={() => handleConfirm(selectedMode)}
                 className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-xl px-8 py-4 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all active:scale-95"
               >
-                Play {selectedMode.replaceAll('-', ' ')}
+                Play {GAME_NAMES[selectedMode]}
               </button>
             </div>
           )}
@@ -216,9 +233,9 @@ function App() {
                 onClick={() => setSelectedMode(mode)}
                 className={`${
                   selectedMode === mode ? 'bg-pink-600 ring-2 ring-pink-400' : 'bg-slate-800 hover:bg-slate-700'
-                } text-white text-sm font-medium px-4 py-3 rounded-xl transition-all active:scale-95 capitalize`}
+                } text-white text-sm font-medium px-4 py-3 rounded-xl transition-all active:scale-95`}
               >
-                {GAME_INFO[mode].emoji} {mode.replaceAll('-', ' ')}
+                {GAME_INFO[mode].emoji} {GAME_NAMES[mode]}
               </button>
             ))}
           </div>
