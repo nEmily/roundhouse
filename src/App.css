@@ -65,11 +65,11 @@ button, a, [role="button"] {
 @keyframes glow {
   0%, 100% {
     opacity: 1;
-    text-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
+    text-shadow: 0 0 10px rgba(217, 119, 6, 0.5);
   }
   50% {
     opacity: 0.8;
-    text-shadow: 0 0 20px rgba(236, 72, 153, 0.8);
+    text-shadow: 0 0 20px rgba(217, 119, 6, 0.8);
   }
 }
 

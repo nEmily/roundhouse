@@ -78,7 +78,7 @@ function App() {
     return (
       <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-8 safe-area-padding animate-fade-in">
         <div className="text-center max-w-2xl w-full">
-          <h1 className="text-7xl font-bold mb-4 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-7xl font-bold mb-4 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
             Roundhouse
           </h1>
           <p className="text-xl text-slate-400 mb-12">
@@ -86,7 +86,7 @@ function App() {
           </p>
           <button
             onClick={() => setScreen('setup')}
-            className="bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-2xl px-14 py-5 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg active:scale-95"
+            className="bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold text-2xl px-14 py-5 rounded-2xl hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg active:scale-95"
           >
             Let's Go
           </button>
@@ -124,12 +124,12 @@ function App() {
               type="text"
               name="playerName"
               placeholder="Enter name"
-              className="w-full bg-slate-800 text-white text-xl px-6 py-4 rounded-xl border-2 border-slate-700 focus:border-pink-500 focus:outline-none mb-3"
+              className="w-full bg-slate-800 text-white text-xl px-6 py-4 rounded-xl border-2 border-slate-700 focus:border-amber-500 focus:outline-none mb-3"
               autoComplete="off"
             />
             <button
               type="submit"
-              className="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold text-xl px-6 py-4 rounded-xl transition-colors active:scale-95"
+              className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold text-xl px-6 py-4 rounded-xl transition-colors active:scale-95"
             >
               + Add Player
             </button>
@@ -156,7 +156,7 @@ function App() {
 
           <button
             onClick={() => startGame()}
-            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-2xl px-12 py-5 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg active:scale-95"
+            className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold text-2xl px-12 py-5 rounded-2xl hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg active:scale-95"
           >
             {players.length > 0 ? `Start Game (${players.length} players)` : 'Start Game'}
           </button>
@@ -193,7 +193,7 @@ function App() {
 
           <button
             onClick={() => handleConfirm()}
-            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-2xl px-12 py-5 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg active:scale-95 mb-4"
+            className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold text-2xl px-12 py-5 rounded-2xl hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg active:scale-95 mb-4"
           >
             🎲 Random Game
           </button>
@@ -226,7 +226,7 @@ function App() {
                 key={mode}
                 onClick={() => setSelectedMode(mode)}
                 className={`${
-                  selectedMode === mode ? 'bg-pink-600 ring-2 ring-pink-400' : 'bg-slate-800 hover:bg-slate-700'
+                  selectedMode === mode ? 'bg-amber-600 ring-2 ring-amber-400' : 'bg-slate-800 hover:bg-slate-700'
                 } text-white text-sm font-medium px-4 py-3 rounded-xl transition-all active:scale-95`}
               >
                 {GAME_INFO[mode].emoji} {GAME_NAMES[mode]}
@@ -259,7 +259,7 @@ function App() {
           <div className="text-4xl font-bold mb-8">
             Pass the phone to
           </div>
-          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent animate-glow">
+          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
             {nextPlayer?.name}!
           </div>
           <button
@@ -326,14 +326,14 @@ function App() {
                     {index === 0 && sortedPlayers[0].score > 0 && '🏆 '}
                     {player.name}
                   </span>
-                  <span className="text-2xl font-bold text-pink-400">{player.score}</span>
+                  <span className="text-2xl font-bold text-amber-400">{player.score}</span>
                 </div>
               ))}
             </div>
           </div>
           <button
             onClick={() => setScreen('welcome')}
-            className="bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-2xl px-14 py-5 rounded-2xl hover:from-pink-600 hover:to-purple-700 transition-all shadow-lg active:scale-95"
+            className="bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold text-2xl px-14 py-5 rounded-2xl hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg active:scale-95"
           >
             Play Again
           </button>

@@ -165,7 +165,7 @@ export function KingsCup() {
 
             {isFlipped && rule && (
               <div className="animate-fade-in">
-                <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6 rounded-xl mb-6">
+                <div className="bg-gradient-to-r from-orange-600 to-amber-600 p-6 rounded-xl mb-6">
                   <h3 className="text-3xl font-bold text-center mb-2">
                     {rule.name}
                   </h3>

@@ -49,7 +49,7 @@ export function Button({
   const baseClasses = 'font-bold rounded-2xl transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed active:scale-95';
 
   const variantClasses = {
-    primary: 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white',
+    primary: 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white',
     secondary: 'bg-slate-700 hover:bg-slate-600 text-white',
     success: 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white',
     danger: 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white',
@@ -96,7 +96,7 @@ export function GameLayout({ children, round, playerName, gameMode }: GameLayout
             </div>
           )}
           {playerName && (
-            <div className="text-lg text-pink-400">
+            <div className="text-lg text-amber-400">
               {playerName}'s turn
             </div>
           )}

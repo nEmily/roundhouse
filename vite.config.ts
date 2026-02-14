@@ -16,7 +16,7 @@ export default defineConfig({
         name: 'Roundhouse',
         short_name: 'Roundhouse',
         description: 'One-phone party game for groups',
-        theme_color: '#ff6b9d',
+        theme_color: '#f59e0b',
         background_color: '#0f172a',
         display: 'standalone',
         orientation: 'portrait',
