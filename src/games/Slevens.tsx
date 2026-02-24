@@ -4,6 +4,10 @@ import { GameLayout, GameCard, Button } from '../components/GameCard';
 
 type GamePhase = 'ready' | 'rolling' | 'result' | 'choose-victim' | 'tap-frenzy';
 
+const DICE_DOTS: Record<number, string> = {
+  1: '⚀', 2: '⚁', 3: '⚂', 4: '⚃', 5: '⚄', 6: '⚅',
+};
+
 export function Slevens() {
   const { players, getCurrentPlayer, nextRound, currentRound, nextPlayer } = useGame();
   const [phase, setPhase] = useState<GamePhase>('ready');
@@ -12,7 +16,6 @@ export function Slevens() {
   const [isRolling, setIsRolling] = useState(false);
   const [victim, setVictim] = useState<typeof players[0] | null>(null);
 
-  // Tap Frenzy state
   const [rollerTaps, setRollerTaps] = useState(0);
   const [victimTaps, setVictimTaps] = useState(0);
   const TARGET_TAPS = 20;
@@ -23,7 +26,6 @@ export function Slevens() {
     setIsRolling(true);
     setPhase('rolling');
 
-    // Animate dice rolling
     let rolls = 0;
     const interval = setInterval(() => {
       setDice1(Math.floor(Math.random() * 6) + 1);
@@ -32,7 +34,6 @@ export function Slevens() {
 
       if (rolls >= 10) {
         clearInterval(interval);
-        // Final roll
         const final1 = Math.floor(Math.random() * 6) + 1;
         const final2 = Math.floor(Math.random() * 6) + 1;
         setDice1(final1);
@@ -49,7 +50,6 @@ export function Slevens() {
   const checkResult = (d1: number, d2: number) => {
     const sum = d1 + d2;
     const isDoubles = d1 === d2;
-
     if (sum === 7 || sum === 11 || isDoubles) {
       setPhase('choose-victim');
     } else {
@@ -68,18 +68,14 @@ export function Slevens() {
     if (phase !== 'tap-frenzy') return;
     const newTaps = rollerTaps + 1;
     setRollerTaps(newTaps);
-    if (newTaps >= TARGET_TAPS) {
-      setTimeout(() => endRound(), 1000);
-    }
+    if (newTaps >= TARGET_TAPS) setTimeout(() => endRound(), 800);
   };
 
   const handleVictimTap = () => {
     if (phase !== 'tap-frenzy') return;
     const newTaps = victimTaps + 1;
     setVictimTaps(newTaps);
-    if (newTaps >= TARGET_TAPS) {
-      setTimeout(() => endRound(), 1000);
-    }
+    if (newTaps >= TARGET_TAPS) setTimeout(() => endRound(), 800);
   };
 
   const endRound = () => {
@@ -94,8 +90,6 @@ export function Slevens() {
     nextRound();
   };
 
-  // player may be null when playing without names
-
   const sum = dice1 + dice2;
   const isDoubles = dice1 === dice2;
   const isHit = sum === 7 || sum === 11 || isDoubles;
@@ -109,8 +103,16 @@ export function Slevens() {
       {/* Ready Phase */}
       {phase === 'ready' && (
         <GameCard>
-          <h2 className="text-4xl font-bold text-center mb-6">Slevens</h2>
-          <p className="text-lg text-center text-slate-300 mb-8">
+          <h2
+            className="text-3xl font-black text-center mb-2"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Slevens
+          </h2>
+          <p
+            className="text-center font-semibold mb-8"
+            style={{ color: 'var(--text-secondary)' }}
+          >
             Roll for 7, 11, or doubles!
           </p>
           <Button onClick={rollDice} variant="primary" size="lg" className="w-full">
@@ -119,36 +121,42 @@ export function Slevens() {
         </GameCard>
       )}
 
-      {/* Rolling/Result Phase */}
+      {/* Rolling / Result Phase */}
       {(phase === 'rolling' || phase === 'result') && (
         <GameCard>
-          <div className="flex justify-center gap-8 mb-8">
-            <div
-              className={`w-32 h-32 bg-white rounded-3xl flex items-center justify-center text-7xl font-bold text-slate-900 shadow-2xl ${
-                isRolling ? 'animate-bounce' : ''
-              }`}
-            >
-              {dice1}
-            </div>
-            <div
-              className={`w-32 h-32 bg-white rounded-3xl flex items-center justify-center text-7xl font-bold text-slate-900 shadow-2xl ${
-                isRolling ? 'animate-bounce' : ''
-              }`}
-            >
-              {dice2}
-            </div>
+          <div className="flex justify-center gap-6 mb-7">
+            {[dice1, dice2].map((d, i) => (
+              <div
+                key={i}
+                className="dice-face flex items-center justify-center"
+                style={{
+                  width: '7rem',
+                  height: '7rem',
+                  fontSize: '4.5rem',
+                  animation: isRolling ? 'pop 0.15s ease-out infinite alternate' : 'none',
+                }}
+              >
+                {DICE_DOTS[d]}
+              </div>
+            ))}
           </div>
 
           {!isRolling && (
             <>
               <div className="text-center mb-6">
-                <div className="text-6xl font-bold mb-2">{sum}</div>
-                <div className={`text-2xl font-bold ${isHit ? 'text-green-400' : 'text-red-400'}`}>
-                  {isHit ? (
-                    <>✓ {isDoubles ? 'Doubles!' : sum === 7 ? 'Seven!' : 'Eleven!'}</>
-                  ) : (
-                    '✗ Drink & Pass'
-                  )}
+                <div
+                  className="text-5xl font-black mb-2"
+                  style={{ color: 'var(--text-primary)' }}
+                >
+                  {sum}
+                </div>
+                <div
+                  className="text-xl font-black"
+                  style={{ color: isHit ? '#3ecf7a' : '#f06040' }}
+                >
+                  {isHit
+                    ? `✓ ${isDoubles ? 'Doubles!' : sum === 7 ? 'Seven!' : 'Eleven!'}`
+                    : '✗ Drink & Pass'}
                 </div>
               </div>
 
@@ -162,10 +170,15 @@ export function Slevens() {
         </GameCard>
       )}
 
-      {/* Choose Victim Phase */}
+      {/* Choose Victim */}
       {phase === 'choose-victim' && (
         <GameCard>
-          <h2 className="text-3xl font-bold text-center mb-6">Choose Your Victim!</h2>
+          <h2
+            className="text-2xl font-black text-center mb-6"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Choose Your Victim!
+          </h2>
           {players.length > 1 ? (
             <div className="grid grid-cols-2 gap-3">
               {players
@@ -176,7 +189,7 @@ export function Slevens() {
                     onClick={() => selectVictim(p)}
                     variant="danger"
                     size="md"
-                    className="py-6"
+                    className="py-5"
                   >
                     {p.name}
                   </Button>
@@ -184,7 +197,12 @@ export function Slevens() {
             </div>
           ) : (
             <>
-              <p className="text-center text-xl mb-8">Point at someone — they're your opponent!</p>
+              <p
+                className="text-center text-lg font-bold mb-8"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Point at someone — they're your opponent!
+              </p>
               <Button
                 onClick={() => selectVictim({ id: 'victim', name: 'Victim', score: 0 })}
                 variant="danger"
@@ -198,66 +216,102 @@ export function Slevens() {
         </GameCard>
       )}
 
-      {/* Tap Frenzy Phase */}
+      {/* Tap Frenzy */}
       {phase === 'tap-frenzy' && victim && (
-        <div className="h-full flex flex-col">
-          <div className="text-center mb-4">
-            <div className="text-2xl font-bold">⚡ TAP FRENZY! ⚡</div>
-            <div className="text-lg text-slate-400">First to {TARGET_TAPS} wins!</div>
+        <div className="flex flex-col" style={{ minHeight: 'calc(100dvh - 120px)' }}>
+          <div className="text-center mb-4 px-4">
+            <div
+              className="text-2xl font-black"
+              style={{ color: '#f5a623' }}
+            >
+              TAP FRENZY!
+            </div>
+            <div
+              className="text-sm font-bold"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              First to {TARGET_TAPS} wins!
+            </div>
           </div>
 
-          <div className="flex-1 grid grid-cols-2 gap-2 touch-none select-none">
-            {/* Roller Side — use onPointerDown for simultaneous two-thumb tapping */}
+          <div className="flex-1 grid grid-cols-2 gap-2.5 touch-none select-none px-1 pb-2">
+            {/* Roller side */}
             <div
               onPointerDown={(e) => {
                 e.preventDefault();
                 if (rollerTaps < TARGET_TAPS && victimTaps < TARGET_TAPS) handleRollerTap();
               }}
-              className={`bg-gradient-to-br from-blue-500 to-blue-600 active:from-blue-700 active:to-blue-800 rounded-2xl p-8 flex flex-col items-center justify-center active:scale-[0.97] cursor-pointer ${
-                rollerTaps >= TARGET_TAPS || victimTaps >= TARGET_TAPS ? 'opacity-60' : ''
-              }`}
+              className="rounded-2xl p-5 flex flex-col items-center justify-center cursor-pointer transition-all"
+              style={{
+                background: 'linear-gradient(160deg, #3b82f6 0%, #1d4ed8 100%)',
+                boxShadow: '0 4px 16px rgba(59,130,246,0.35)',
+                opacity: rollerTaps >= TARGET_TAPS || victimTaps >= TARGET_TAPS ? 0.65 : 1,
+              }}
             >
-              <div className="text-4xl font-bold mb-4">{player?.name || 'Roller'}</div>
-              <div className="text-7xl font-bold mb-4">{rollerTaps}</div>
-              <div className="w-full bg-slate-900 rounded-full h-4">
+              <div
+                className="text-2xl font-black mb-3 text-center leading-tight"
+                style={{ color: 'rgba(255,255,255,0.9)' }}
+              >
+                {player?.name || 'Roller'}
+              </div>
+              <div
+                className="text-6xl font-black mb-4"
+                style={{ color: '#fff' }}
+              >
+                {rollerTaps}
+              </div>
+              <div className="tap-bar w-full">
                 <div
-                  className="bg-white h-full rounded-full transition-all"
-                  style={{ width: `${(rollerTaps / TARGET_TAPS) * 100}%` }}
+                  className="tap-bar-fill"
+                  style={{ width: `${Math.min((rollerTaps / TARGET_TAPS) * 100, 100)}%` }}
                 />
               </div>
               {rollerTaps >= TARGET_TAPS && (
-                <div className="text-3xl mt-4">🏆 WINNER!</div>
+                <div className="text-2xl mt-3">🏆 WIN!</div>
               )}
             </div>
 
-            {/* Victim Side */}
+            {/* Victim side */}
             <div
               onPointerDown={(e) => {
                 e.preventDefault();
                 if (rollerTaps < TARGET_TAPS && victimTaps < TARGET_TAPS) handleVictimTap();
               }}
-              className={`bg-gradient-to-br from-red-500 to-red-600 active:from-red-700 active:to-red-800 rounded-2xl p-8 flex flex-col items-center justify-center active:scale-[0.97] cursor-pointer ${
-                rollerTaps >= TARGET_TAPS || victimTaps >= TARGET_TAPS ? 'opacity-60' : ''
-              }`}
+              className="rounded-2xl p-5 flex flex-col items-center justify-center cursor-pointer transition-all"
+              style={{
+                background: 'linear-gradient(160deg, #f06040 0%, #c73e22 100%)',
+                boxShadow: '0 4px 16px rgba(240,96,64,0.35)',
+                opacity: rollerTaps >= TARGET_TAPS || victimTaps >= TARGET_TAPS ? 0.65 : 1,
+              }}
             >
-              <div className="text-4xl font-bold mb-4">{victim.name}</div>
-              <div className="text-7xl font-bold mb-4">{victimTaps}</div>
-              <div className="w-full bg-slate-900 rounded-full h-4">
+              <div
+                className="text-2xl font-black mb-3 text-center leading-tight"
+                style={{ color: 'rgba(255,255,255,0.9)' }}
+              >
+                {victim.name}
+              </div>
+              <div
+                className="text-6xl font-black mb-4"
+                style={{ color: '#fff' }}
+              >
+                {victimTaps}
+              </div>
+              <div className="tap-bar w-full">
                 <div
-                  className="bg-white h-full rounded-full transition-all"
-                  style={{ width: `${(victimTaps / TARGET_TAPS) * 100}%` }}
+                  className="tap-bar-fill"
+                  style={{ width: `${Math.min((victimTaps / TARGET_TAPS) * 100, 100)}%` }}
                 />
               </div>
               {victimTaps >= TARGET_TAPS && (
-                <div className="text-3xl mt-4">🏆 WINNER!</div>
+                <div className="text-2xl mt-3">🏆 WIN!</div>
               )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Next Round Button (always available) */}
-      <div className="mt-6">
+      {/* Next Round button — always visible */}
+      <div className="mt-4 px-1">
         <Button
           onClick={skipToNextRound}
           variant="secondary"

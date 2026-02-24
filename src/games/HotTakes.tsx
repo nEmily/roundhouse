@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
-import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { GameLayout, GameCard, Button, PassPhoneScreen } from '../components/GameCard';
 import { hotTakesPrompts } from '../data/hot-takes';
 
 export function HotTakes() {
@@ -36,21 +36,10 @@ export function HotTakes() {
 
   if (showingPass) {
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
-        <div className="text-center max-w-2xl w-full">
-          <div className="text-5xl mb-6">📱</div>
-          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
-          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
-            {player?.name}!
-          </div>
-          <button
-            onClick={() => setShowingPass(false)}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
-          >
-            Ready
-          </button>
-        </div>
-      </div>
+      <PassPhoneScreen
+        playerName={player?.name}
+        onReady={() => setShowingPass(false)}
+      />
     );
   }
 
@@ -61,23 +50,51 @@ export function HotTakes() {
       gameMode="hot-takes"
     >
       <GameCard>
-        <div className="text-center mb-6">
-          <div className="inline-block bg-gradient-to-r from-red-500 to-orange-500 px-6 py-2 rounded-full text-lg font-bold mb-4">
-            🔥 Hot Take
+        {/* Flame header */}
+        <div className="text-center mb-5">
+          <div
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-base font-black"
+            style={{
+              background: 'linear-gradient(135deg, rgba(240,96,64,0.2), rgba(245,120,20,0.2))',
+              color: '#f06040',
+              border: '1.5px solid rgba(240,96,64,0.35)',
+            }}
+          >
+            🌶️ Hot Take
           </div>
         </div>
 
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 leading-relaxed">
-          {hotTake.opinion}
+        <h2
+          className="text-2xl font-black text-center mb-8 leading-snug"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          "{hotTake.opinion}"
         </h2>
 
-        <div className="bg-gradient-to-r from-red-500/20 to-orange-500/20 border-2 border-red-500/30 rounded-2xl p-6 text-center mb-10">
-          <p className="text-xl font-bold mb-2">Debate it out!</p>
-          <p className="text-lg text-slate-300">Minority drinks 🍺</p>
+        {/* Debate call-to-action */}
+        <div
+          className="rounded-2xl p-5 text-center mb-8"
+          style={{
+            background: 'linear-gradient(135deg, rgba(240,96,64,0.1), rgba(245,120,20,0.08))',
+            border: '1px solid rgba(240,96,64,0.2)',
+          }}
+        >
+          <p
+            className="text-lg font-black mb-1"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Debate it out!
+          </p>
+          <p
+            className="text-sm font-semibold"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Minority drinks 🍺
+          </p>
         </div>
 
         <Button onClick={handleNext} variant="primary" size="lg" className="w-full">
-          Next
+          Next →
         </Button>
       </GameCard>
     </GameLayout>

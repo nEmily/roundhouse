@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
-import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { GameLayout, GameCard, Button, PassPhoneScreen } from '../components/GameCard';
 import { herdMentalityQuestions } from '../data/herd-mentality';
 
 export function HerdMentality() {
@@ -36,21 +36,10 @@ export function HerdMentality() {
 
   if (showingPass) {
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
-        <div className="text-center max-w-2xl w-full">
-          <div className="text-5xl mb-6">📱</div>
-          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
-          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
-            {player?.name}!
-          </div>
-          <button
-            onClick={() => setShowingPass(false)}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
-          >
-            Ready
-          </button>
-        </div>
-      </div>
+      <PassPhoneScreen
+        playerName={player?.name}
+        onReady={() => setShowingPass(false)}
+      />
     );
   }
 
@@ -61,23 +50,51 @@ export function HerdMentality() {
       gameMode="herd-mentality"
     >
       <GameCard>
-        <div className="text-center mb-6">
-          <div className="inline-block bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-2 rounded-full text-lg font-bold mb-4">
+        {/* Badge */}
+        <div className="text-center mb-5">
+          <div
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-base font-black"
+            style={{
+              background: 'linear-gradient(135deg, rgba(245,166,35,0.18), rgba(217,119,6,0.12))',
+              color: '#f5a623',
+              border: '1.5px solid rgba(245,166,35,0.3)',
+            }}
+          >
             🐑 Herd Mentality
           </div>
         </div>
 
-        <p className="text-3xl md:text-4xl font-bold text-center mb-10 leading-tight">
+        <p
+          className="text-2xl font-black text-center mb-8 leading-snug"
+          style={{ color: 'var(--text-primary)' }}
+        >
           {question.text}
         </p>
 
-        <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/30 rounded-2xl p-6 text-center mb-10">
-          <p className="text-xl font-bold mb-2">On 3, everyone shout your answer!</p>
-          <p className="text-base text-slate-300">Match the majority or drink 🍺</p>
+        {/* Instructions */}
+        <div
+          className="rounded-2xl p-5 text-center mb-8"
+          style={{
+            background: 'rgba(245,166,35,0.08)',
+            border: '1px solid rgba(245,166,35,0.18)',
+          }}
+        >
+          <p
+            className="text-lg font-black mb-1"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            On 3, everyone shout your answer!
+          </p>
+          <p
+            className="text-sm font-semibold"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Match the majority or drink 🍺
+          </p>
         </div>
 
         <Button onClick={handleNext} variant="primary" size="lg" className="w-full">
-          Next
+          Next →
         </Button>
       </GameCard>
     </GameLayout>

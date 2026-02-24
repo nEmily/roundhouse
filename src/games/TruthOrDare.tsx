@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useGame } from '../hooks/useGame';
-import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { GameLayout, GameCard, Button, PassPhoneScreen } from '../components/GameCard';
 import { truthOrDarePrompts } from '../data/truth-or-dare';
 
 export function TruthOrDare() {
@@ -15,12 +15,10 @@ export function TruthOrDare() {
   const handleChoice = (type: 'truth' | 'dare') => {
     setChoice(type);
 
-    // Filter prompts by intensity (<=), type, and not already used
     let filtered = truthOrDarePrompts.filter(
       (p, idx) => p.intensity <= intensity && p.type === type && !usedPromptIds.has(idx)
     );
 
-    // If all prompts used, reset and use any available
     if (filtered.length === 0) {
       setUsedPromptIds(new Set());
       filtered = truthOrDarePrompts.filter(
@@ -28,7 +26,6 @@ export function TruthOrDare() {
       );
     }
 
-    // Pick random prompt
     const random = filtered[Math.floor(Math.random() * filtered.length)];
     const randomIdx = truthOrDarePrompts.findIndex(p => p === random);
     setPrompt(random);
@@ -38,32 +35,18 @@ export function TruthOrDare() {
   const handleNext = () => {
     setChoice(null);
     setPrompt(null);
-    // Rotate player + bump round, stay in this game
     nextTurn();
-    // Show pass screen if there are players, otherwise go straight to next pick
     if (players.length > 0) {
       setShowingPass(true);
     }
   };
 
-  // Inline pass-phone screen between rounds
   if (showingPass) {
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
-        <div className="text-center max-w-2xl w-full">
-          <div className="text-5xl mb-6">📱</div>
-          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
-          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
-            {player?.name}!
-          </div>
-          <button
-            onClick={() => setShowingPass(false)}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
-          >
-            Ready
-          </button>
-        </div>
-      </div>
+      <PassPhoneScreen
+        playerName={player?.name}
+        onReady={() => setShowingPass(false)}
+      />
     );
   }
 
@@ -75,32 +58,80 @@ export function TruthOrDare() {
     >
       {!choice ? (
         <GameCard>
-          <h2 className="text-4xl font-bold text-center mb-8">
+          <h2
+            className="text-3xl font-black text-center mb-2"
+            style={{ color: 'var(--text-primary)' }}
+          >
             Choose Wisely...
           </h2>
+          <p
+            className="text-center text-sm font-semibold mb-8"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            {player?.name ? `${player.name}, pick one` : 'Pick one'}
+          </p>
           <div className="flex flex-col gap-4">
-            <Button onClick={() => handleChoice('truth')} variant="primary" size="lg">
-              Truth
-            </Button>
-            <Button onClick={() => handleChoice('dare')} variant="danger" size="lg">
-              Dare
-            </Button>
+            {/* Truth — violet */}
+            <button
+              onClick={() => handleChoice('truth')}
+              className="btn w-full"
+              style={{
+                fontSize: '1.5rem',
+                padding: '1.2rem',
+                borderRadius: '1.1rem',
+                background: 'linear-gradient(160deg, #a78bfa 0%, #7c3aed 100%)',
+                color: '#f5f3ff',
+                boxShadow: '0 4px 16px rgba(124,58,237,0.35), 0 1px 3px rgba(0,0,0,0.3)',
+              }}
+            >
+              💬 Truth
+            </button>
+            {/* Dare — coral */}
+            <button
+              onClick={() => handleChoice('dare')}
+              className="btn w-full"
+              style={{
+                fontSize: '1.5rem',
+                padding: '1.2rem',
+                borderRadius: '1.1rem',
+                background: 'linear-gradient(160deg, #f06040 0%, #c73e22 100%)',
+                color: '#fff5f2',
+                boxShadow: '0 4px 16px rgba(240,96,64,0.35), 0 1px 3px rgba(0,0,0,0.3)',
+              }}
+            >
+              🔥 Dare
+            </button>
           </div>
         </GameCard>
       ) : (
         <GameCard>
-          <div className="text-center mb-6">
-            <div className="inline-block bg-slate-700 px-6 py-2 rounded-full text-lg font-bold mb-4">
+          {/* Choice badge */}
+          <div className="text-center mb-5">
+            <div
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-base font-black"
+              style={choice === 'truth' ? {
+                backgroundColor: 'rgba(167,139,250,0.18)',
+                color: '#a78bfa',
+                border: '1.5px solid rgba(167,139,250,0.35)',
+              } : {
+                backgroundColor: 'rgba(240,96,64,0.18)',
+                color: '#f06040',
+                border: '1.5px solid rgba(240,96,64,0.35)',
+              }}
+            >
               {choice === 'truth' ? '💬 Truth' : '🔥 Dare'}
             </div>
           </div>
 
-          <p className="text-2xl md:text-3xl text-center mb-8 leading-relaxed">
+          <p
+            className="text-2xl font-black text-center mb-8 leading-snug"
+            style={{ color: 'var(--text-primary)' }}
+          >
             {prompt?.text}
           </p>
 
           <Button onClick={handleNext} variant="primary" size="lg" className="w-full">
-            Next
+            Next →
           </Button>
         </GameCard>
       )}

@@ -1,19 +1,389 @@
 @import "tailwindcss";
 
+/* ============================================================
+   ROUNDHOUSE — Design System
+   Warm dark game-night aesthetic. Cozy but energetic.
+   Primary background: deep warm brown/burgundy
+   Accents: golden amber, coral, teal, violet
+   ============================================================ */
+
+:root {
+  /* Core palette */
+  --bg-base: #150d07;
+  --bg-surface: #1f1208;
+  --bg-card: #271810;
+  --bg-card-hover: #2f1e14;
+  --bg-elevated: #3a2318;
+
+  /* Border / dividers */
+  --border-subtle: rgba(255, 180, 80, 0.12);
+  --border-mid: rgba(255, 180, 80, 0.22);
+
+  /* Text */
+  --text-primary: #fdf4e8;
+  --text-secondary: #c9a87a;
+  --text-muted: #7a5c40;
+
+  /* Accent: golden amber (primary CTA) */
+  --amber-bright: #f5a623;
+  --amber-mid: #e8920f;
+  --amber-dark: #c97b0c;
+
+  /* Accent: coral/rose (secondary, danger, dare) */
+  --coral: #f06040;
+  --coral-dark: #d44e2e;
+
+  /* Accent: emerald (success, truth, confirm) */
+  --emerald: #3ecf7a;
+  --emerald-dark: #2db568;
+
+  /* Accent: sky/teal (trivia, wavelength) */
+  --sky: #38bdf8;
+  --sky-dark: #0ea5e9;
+
+  /* Accent: violet (wildcard, mystery) */
+  --violet: #a78bfa;
+  --violet-dark: #7c3aed;
+
+  /* Accent: gold/yellow (kings cup, royalty) */
+  --gold: #fbbf24;
+  --gold-dark: #d97706;
+}
+
 * {
   box-sizing: border-box;
+}
+
+html {
+  /* Smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background-color: #0f172a;
-  color: #f1f5f9;
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Subtle warm noise texture via gradient */
+  background-image: radial-gradient(ellipse at 20% 0%, rgba(180, 80, 20, 0.18) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 100%, rgba(100, 30, 10, 0.15) 0%, transparent 60%);
+  background-attachment: fixed;
 }
 
 #root {
   min-height: 100dvh;
+}
+
+/* ============================================================
+   UTILITY CLASSES — warm replacements for slate-*
+   ============================================================ */
+
+.bg-warm-base     { background-color: var(--bg-base); }
+.bg-warm-surface  { background-color: var(--bg-surface); }
+.bg-warm-card     { background-color: var(--bg-card); }
+.bg-warm-elevated { background-color: var(--bg-elevated); }
+
+.text-warm-primary   { color: var(--text-primary); }
+.text-warm-secondary { color: var(--text-secondary); }
+.text-warm-muted     { color: var(--text-muted); }
+
+.border-warm { border-color: var(--border-subtle); }
+.border-warm-mid { border-color: var(--border-mid); }
+
+/* ============================================================
+   TOUCH / INTERACTION
+   ============================================================ */
+
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Pressed state for all interactive elements */
+.tap-target {
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.tap-target:active {
+  transform: scale(0.96);
+}
+
+/* ============================================================
+   SAFE AREA
+   ============================================================ */
+
+.safe-area-padding {
+  padding-top: max(env(safe-area-inset-top), 1rem);
+  padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.safe-top {
+  padding-top: max(env(safe-area-inset-top), 0.5rem);
+}
+
+/* ============================================================
+   SCROLL FADE
+   ============================================================ */
+
+.scroll-fade {
+  position: relative;
+}
+.scroll-fade::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  display: block;
+  height: 2.5rem;
+  margin-top: -2.5rem;
+  background: linear-gradient(to bottom, transparent, var(--bg-base));
+  pointer-events: none;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+.animate-pop {
+  animation: pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes glow {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 16px rgba(245, 166, 35, 0.5), 0 0 32px rgba(245, 166, 35, 0.2);
+  }
+  50% {
+    opacity: 0.88;
+    text-shadow: 0 0 28px rgba(245, 166, 35, 0.8), 0 0 48px rgba(245, 166, 35, 0.35);
+  }
+}
+
+.animate-glow {
+  animation: glow 2.2s ease-in-out infinite;
+}
+
+@keyframes bounceIn {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  80%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, var(--amber-mid) 0%, #fde68a 40%, var(--amber-mid) 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ============================================================
+   CARD STYLES
+   ============================================================ */
+
+.game-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.4),
+    0 4px 16px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,200,100,0.06);
+}
+
+/* ============================================================
+   BUTTON STYLES
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-weight: 800;
+  border-radius: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.1s ease, filter 0.1s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3);
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1.1;
+}
+
+.btn:active {
+  transform: scale(0.95) translateY(1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(160deg, #f5a623 0%, #e07a10 100%);
+  color: #1a0800;
+  box-shadow: 0 4px 16px rgba(240, 140, 20, 0.35), 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.btn-primary:active {
+  filter: brightness(0.9);
+}
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-mid);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.btn-success {
+  background: linear-gradient(160deg, #3ecf7a 0%, #1fad5c 100%);
+  color: #051a0e;
+  box-shadow: 0 4px 16px rgba(62, 207, 122, 0.3), 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.btn-danger {
+  background: linear-gradient(160deg, #f06040 0%, #c73e22 100%);
+  color: #200800;
+  box-shadow: 0 4px 16px rgba(240, 96, 64, 0.3), 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.btn-lg { font-size: 1.35rem; padding: 1.1rem 2rem; }
+.btn-md { font-size: 1.15rem; padding: 0.9rem 1.6rem; }
+.btn-sm { font-size: 1rem;    padding: 0.75rem 1.25rem; }
+
+/* ============================================================
+   INTENSITY BADGE
+   ============================================================ */
+
+.intensity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.intensity-1 { background: rgba(62, 207, 122, 0.15); color: #3ecf7a; border: 1px solid rgba(62, 207, 122, 0.3); }
+.intensity-2 { background: rgba(245, 166, 35, 0.15);  color: #f5a623; border: 1px solid rgba(245, 166, 35, 0.3); }
+.intensity-3 { background: rgba(240, 96, 64, 0.15);   color: #f06040; border: 1px solid rgba(240, 96, 64, 0.3); }
+
+/* ============================================================
+   GAME MODE PILL TAGS
+   ============================================================ */
+
+.game-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* ============================================================
+   PLAYER CHIP
+   ============================================================ */
+
+.player-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  padding: 0.9rem 1.1rem;
+}
+
+/* ============================================================
+   INPUT
+   ============================================================ */
+
+.warm-input {
+  width: 100%;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-mid);
+  border-radius: 0.875rem;
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.warm-input:focus {
+  border-color: var(--amber-bright);
+  box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.2);
+}
+
+.warm-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+
+.warm-divider {
+  border: none;
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 1.5rem 0;
 }

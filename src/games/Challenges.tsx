@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
-import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { GameLayout, GameCard, Button, PassPhoneScreen } from '../components/GameCard';
 import { challengesPrompts } from '../data/challenges';
 
 export function Challenges() {
@@ -13,10 +13,8 @@ export function Challenges() {
   const player = getCurrentPlayer();
 
   useEffect(() => {
-    // Filter challenges by intensity (<=) and not already used
     let filtered = challengesPrompts.filter((c, idx) => c.intensity <= intensity && !usedChallengeIds.has(idx));
 
-    // If all challenges used, reset and use any available
     if (filtered.length === 0) {
       setUsedChallengeIds(new Set());
       filtered = challengesPrompts.filter(c => c.intensity <= intensity);
@@ -29,7 +27,7 @@ export function Challenges() {
     setTimer(random.timeLimit || null);
   }, [intensity, currentRound]);
 
-  // Auto-start timer when challenge loads
+  // Auto-start timer
   useEffect(() => {
     if (timer === null || timer <= 0) return;
 
@@ -51,23 +49,14 @@ export function Challenges() {
 
   if (showingPass) {
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
-        <div className="text-center max-w-2xl w-full">
-          <div className="text-5xl mb-6">📱</div>
-          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
-          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
-            {player?.name}!
-          </div>
-          <button
-            onClick={() => setShowingPass(false)}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
-          >
-            Ready
-          </button>
-        </div>
-      </div>
+      <PassPhoneScreen
+        playerName={player?.name}
+        onReady={() => setShowingPass(false)}
+      />
     );
   }
+
+  const isUrgent = timer !== null && timer <= 5;
 
   return (
     <GameLayout
@@ -76,31 +65,51 @@ export function Challenges() {
       gameMode="challenges"
     >
       <GameCard>
-        <div className="text-center mb-6">
-          <div className="inline-block bg-gradient-to-r from-orange-500 to-red-500 px-6 py-2 rounded-full text-lg font-bold mb-4">
+        {/* Challenge badge */}
+        <div className="text-center mb-5">
+          <div
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-base font-black"
+            style={{
+              background: 'linear-gradient(135deg, rgba(240,96,64,0.18), rgba(199,62,34,0.12))',
+              color: '#f06040',
+              border: '1.5px solid rgba(240,96,64,0.3)',
+            }}
+          >
             🎯 Challenge
           </div>
         </div>
 
-        <p className="text-3xl md:text-4xl font-bold text-center mb-8 leading-relaxed">
+        <p
+          className="text-2xl font-black text-center mb-7 leading-snug"
+          style={{ color: 'var(--text-primary)' }}
+        >
           {challenge.challenge}
         </p>
 
+        {/* Timer */}
         {timer !== null && (
-          <div className="text-center mb-8">
-            <div className={`text-6xl font-bold ${timer <= 5 ? 'text-red-400 animate-pulse' : 'text-amber-400'}`}>
-              {timer}s
+          <div className="text-center mb-7">
+            <div
+              className="text-6xl font-black inline-block"
+              style={{
+                color: isUrgent ? '#f06040' : 'var(--amber-bright)',
+                animation: isUrgent ? 'pop 0.5s ease-out infinite alternate' : undefined,
+                filter: isUrgent ? 'drop-shadow(0 0 12px rgba(240,96,64,0.6))' : 'none',
+              }}
+            >
+              {timer}
+            </div>
+            <div
+              className="text-sm font-bold mt-1"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              seconds
             </div>
           </div>
         )}
 
-        <Button
-          onClick={handleNext}
-          variant="primary"
-          size="lg"
-          className="w-full"
-        >
-          Next
+        <Button onClick={handleNext} variant="primary" size="lg" className="w-full">
+          Next →
         </Button>
       </GameCard>
     </GameLayout>

@@ -19,7 +19,6 @@ export function KingsCup() {
 
   const currentPlayer = getCurrentPlayer();
 
-  // Initialize deck on mount
   useEffect(() => {
     if (deck.length === 0) {
       setDeck(generateDeck());
@@ -33,17 +32,13 @@ export function KingsCup() {
     setCurrentCard(drawnCard);
     setDeck(remainingDeck);
 
-    // Animate flip
     setTimeout(() => {
       setIsFlipped(true);
     }, 100);
 
-    // Check if it's a King
     if (drawnCard.value === 'K') {
       const newKingsCount = kingsDrawn + 1;
       setKingsDrawn(newKingsCount);
-
-      // 4th King ends the game
       if (newKingsCount === 4) {
         setGameEnded(true);
       }
@@ -63,12 +58,8 @@ export function KingsCup() {
 
   const rule = currentCard ? getRuleForCard(currentCard.value) : null;
 
-  // Get color based on suit
-  const getSuitColor = (suit: Suit) => {
-    return suit === '♥' || suit === '♦' ? 'text-red-500' : 'text-gray-900';
-  };
-
-  // currentPlayer may be null when playing without names
+  const isRed = (suit: Suit) => suit === '♥' || suit === '♦';
+  const suitColor = currentCard ? (isRed(currentCard.suit) ? '#ef4444' : '#1e293b') : '#1e293b';
 
   return (
     <GameLayout
@@ -79,119 +70,218 @@ export function KingsCup() {
       <GameCard>
         {!currentCard ? (
           <>
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">Kings Cup</h2>
-              <p className="text-lg text-slate-400 mb-2">
-                Cards remaining: {deck.length}
-              </p>
-              <p className="text-lg text-slate-400">
-                Kings drawn: {kingsDrawn}/4
-              </p>
-            </div>
-
-            <div className="flex justify-center mb-8">
-              <button
-                onClick={drawCard}
-                className="relative w-48 h-64 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl shadow-2xl border-4 border-blue-400 hover:scale-105 transition-transform cursor-pointer"
+            {/* Draw phase */}
+            <div className="text-center mb-6">
+              <h2
+                className="text-2xl font-black mb-3"
+                style={{ color: 'var(--text-primary)' }}
               >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-white">
-                    <div className="text-6xl mb-2">🃏</div>
-                    <div className="text-lg font-bold">Tap to Draw</div>
+                Kings Cup
+              </h2>
+              <div className="flex justify-center gap-6">
+                <div className="text-center">
+                  <div
+                    className="text-2xl font-black"
+                    style={{ color: 'var(--amber-bright)' }}
+                  >
+                    {deck.length}
+                  </div>
+                  <div
+                    className="text-xs font-bold"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    cards left
                   </div>
                 </div>
-                {/* Card back pattern */}
-                <div className="absolute inset-4 border-2 border-blue-300 rounded-lg opacity-50"></div>
-                <div className="absolute inset-8 border-2 border-blue-300 rounded-lg opacity-30"></div>
-              </button>
-            </div>
-
-            <div className="bg-slate-700 p-4 rounded-lg text-center text-sm text-slate-400">
-              <p className="mb-2">
-                Draw a card to reveal your rule!
-              </p>
-              {kingsDrawn === 3 && (
-                <p className="text-yellow-400 font-semibold">
-                  ⚠️ Warning: Next King drinks the Kings Cup!
-                </p>
-              )}
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="flex justify-center mb-6">
-              <div
-                className={`relative w-48 h-64 transition-all duration-500 ${
-                  isFlipped ? 'scale-110' : 'scale-100'
-                }`}
-                style={{
-                  transformStyle: 'preserve-3d',
-                  perspective: '1000px',
-                  transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                }}
-              >
-                {/* Card front */}
                 <div
-                  className="absolute inset-0 bg-white rounded-xl shadow-2xl border-4 border-gray-300 flex flex-col items-center justify-center"
-                  style={{
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    transform: 'rotateY(180deg)',
-                  }}
-                >
-                  {/* Top corner */}
-                  <div className={`absolute top-4 left-4 text-center ${getSuitColor(currentCard.suit)}`}>
-                    <div className="text-2xl font-bold leading-none">{currentCard.value}</div>
-                    <div className="text-3xl leading-none">{currentCard.suit}</div>
-                  </div>
-
-                  {/* Center */}
-                  <div className={`text-center ${getSuitColor(currentCard.suit)}`}>
-                    <div className="text-7xl mb-2">{currentCard.suit}</div>
-                    <div className="text-4xl font-bold">{currentCard.value}</div>
-                  </div>
-
-                  {/* Bottom corner (rotated) */}
+                  className="w-px"
+                  style={{ backgroundColor: 'var(--border-subtle)' }}
+                />
+                <div className="text-center">
                   <div
-                    className={`absolute bottom-4 right-4 text-center ${getSuitColor(currentCard.suit)}`}
-                    style={{ transform: 'rotate(180deg)' }}
+                    className="text-2xl font-black"
+                    style={{ color: kingsDrawn >= 3 ? '#f06040' : 'var(--text-primary)' }}
                   >
-                    <div className="text-2xl font-bold leading-none">{currentCard.value}</div>
-                    <div className="text-3xl leading-none">{currentCard.suit}</div>
+                    {kingsDrawn}/4
+                  </div>
+                  <div
+                    className="text-xs font-bold"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    kings drawn
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Draw card */}
+            <div className="flex justify-center mb-7">
+              <button
+                onClick={drawCard}
+                className="relative w-44 h-60 rounded-2xl cursor-pointer transition-transform hover:scale-105"
+                style={{
+                  background: 'linear-gradient(145deg, #7c3aed 0%, #4c1d95 100%)',
+                  boxShadow: '0 8px 28px rgba(124,58,237,0.45), 0 2px 6px rgba(0,0,0,0.4)',
+                  border: '2px solid rgba(167,139,250,0.3)',
+                }}
+              >
+                {/* Inner border decorations */}
+                <div
+                  className="absolute inset-3 rounded-xl"
+                  style={{ border: '1.5px solid rgba(167,139,250,0.3)' }}
+                />
+                <div
+                  className="absolute inset-6 rounded-lg"
+                  style={{ border: '1px solid rgba(167,139,250,0.18)' }}
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="text-5xl mb-2">🃏</div>
+                  <div
+                    className="text-base font-black"
+                    style={{ color: 'rgba(221,214,254,0.9)' }}
+                  >
+                    Tap to Draw
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            {/* Warning */}
+            {kingsDrawn === 3 && (
+              <div
+                className="rounded-xl p-4 text-center animate-fade-in"
+                style={{
+                  background: 'rgba(240,96,64,0.12)',
+                  border: '1px solid rgba(240,96,64,0.3)',
+                }}
+              >
+                <p
+                  className="font-black text-sm"
+                  style={{ color: '#f06040' }}
+                >
+                  Next King drinks the Kings Cup!
+                </p>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {/* Card flip animation */}
+            <div className="flex justify-center mb-5" style={{ perspective: '1000px' }}>
+              <div
+                className="relative w-44 h-60"
+                style={{
+                  transformStyle: 'preserve-3d',
+                  transition: 'transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94)',
+                  transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                }}
+              >
+                {/* Card back */}
+                <div
+                  className="absolute inset-0 rounded-2xl"
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    background: 'linear-gradient(145deg, #7c3aed 0%, #4c1d95 100%)',
+                    boxShadow: '0 8px 28px rgba(0,0,0,0.5)',
+                    border: '2px solid rgba(167,139,250,0.3)',
+                  }}
+                />
+                {/* Card face */}
+                <div
+                  className="absolute inset-0 rounded-2xl flex flex-col"
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    transform: 'rotateY(180deg)',
+                    background: '#fff8f0',
+                    boxShadow: '0 8px 28px rgba(0,0,0,0.5)',
+                    border: '2px solid rgba(200,150,100,0.3)',
+                    color: suitColor,
+                    padding: '0.875rem',
+                  }}
+                >
+                  {/* Top corner */}
+                  <div className="text-left">
+                    <div className="text-xl font-black leading-none">{currentCard?.value}</div>
+                    <div className="text-2xl leading-none">{currentCard?.suit}</div>
+                  </div>
+                  {/* Center */}
+                  <div className="flex-1 flex items-center justify-center flex-col">
+                    <div className="text-6xl mb-1">{currentCard?.suit}</div>
+                    <div className="text-3xl font-black">{currentCard?.value}</div>
+                  </div>
+                  {/* Bottom corner rotated */}
+                  <div className="text-right" style={{ transform: 'rotate(180deg)' }}>
+                    <div className="text-xl font-black leading-none">{currentCard?.value}</div>
+                    <div className="text-2xl leading-none">{currentCard?.suit}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Rule reveal */}
             {isFlipped && rule && (
-              <div className="animate-fade-in">
-                <div className="bg-gradient-to-r from-orange-600 to-amber-600 p-6 rounded-xl mb-6">
-                  <h3 className="text-3xl font-bold text-center mb-2">
+              <div className="animate-slide-up">
+                {/* Rule name & description */}
+                <div
+                  className="rounded-2xl p-5 mb-4"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(245,166,35,0.18), rgba(224,122,16,0.12))',
+                    border: '1.5px solid rgba(245,166,35,0.3)',
+                  }}
+                >
+                  <h3
+                    className="text-2xl font-black text-center mb-2"
+                    style={{ color: '#f5a623' }}
+                  >
                     {rule.name}
                   </h3>
-                  <p className="text-xl text-center font-semibold">
+                  <p
+                    className="text-base font-bold text-center"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
                     {rule.rule}
                   </p>
                 </div>
 
-                <div className="bg-slate-700 p-5 rounded-lg mb-6">
-                  <p className="text-lg leading-relaxed">
+                {/* Explanation */}
+                <div
+                  className="rounded-xl p-4 mb-4"
+                  style={{
+                    backgroundColor: 'var(--bg-elevated)',
+                    border: '1px solid var(--border-subtle)',
+                  }}
+                >
+                  <p
+                    className="text-sm font-semibold leading-relaxed"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
                     {rule.explanation}
                   </p>
                 </div>
 
-                {currentCard.value === 'K' && (
-                  <div className={`p-4 rounded-lg mb-6 ${
-                    kingsDrawn === 4
-                      ? 'bg-red-600 animate-pulse'
-                      : 'bg-yellow-600'
-                  }`}>
+                {/* King alert */}
+                {currentCard?.value === 'K' && (
+                  <div
+                    className={`rounded-xl p-4 mb-4 text-center ${kingsDrawn === 4 ? 'animate-pulse' : ''}`}
+                    style={{
+                      backgroundColor: kingsDrawn === 4 ? 'rgba(240,96,64,0.2)' : 'rgba(251,191,36,0.15)',
+                      border: `1px solid ${kingsDrawn === 4 ? 'rgba(240,96,64,0.4)' : 'rgba(251,191,36,0.3)'}`,
+                    }}
+                  >
                     {kingsDrawn === 4 ? (
-                      <p className="text-xl font-bold text-center">
+                      <p
+                        className="text-xl font-black"
+                        style={{ color: '#f06040' }}
+                      >
                         🍺 4th KING! Drink the Kings Cup! 🍺
                       </p>
                     ) : (
-                      <p className="text-lg text-center">
+                      <p
+                        className="text-base font-black"
+                        style={{ color: '#fbbf24' }}
+                      >
                         👑 King #{kingsDrawn} drawn
                       </p>
                     )}
@@ -204,7 +294,7 @@ export function KingsCup() {
                   size="lg"
                   className="w-full"
                 >
-                  {gameEnded ? 'Next Round' : 'Next Draw'}
+                  {gameEnded ? 'Next Round →' : 'Next Draw →'}
                 </Button>
               </div>
             )}

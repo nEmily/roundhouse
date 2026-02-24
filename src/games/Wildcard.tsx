@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
-import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { GameLayout, GameCard, Button, PassPhoneScreen } from '../components/GameCard';
 import { wildcardPrompts } from '../data/wildcard';
 
 export function Wildcard() {
@@ -12,10 +12,8 @@ export function Wildcard() {
   const player = getCurrentPlayer();
 
   useEffect(() => {
-    // Filter wildcards by intensity (<=) and not already used
     let filtered = wildcardPrompts.filter((w, idx) => w.intensity <= intensity && !usedPromptIds.has(idx));
 
-    // If all wildcards used, reset and use any available
     if (filtered.length === 0) {
       setUsedPromptIds(new Set());
       filtered = wildcardPrompts.filter(w => w.intensity <= intensity);
@@ -38,21 +36,10 @@ export function Wildcard() {
 
   if (showingPass) {
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
-        <div className="text-center max-w-2xl w-full">
-          <div className="text-5xl mb-6">📱</div>
-          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
-          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
-            {player?.name}!
-          </div>
-          <button
-            onClick={() => setShowingPass(false)}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
-          >
-            Ready
-          </button>
-        </div>
-      </div>
+      <PassPhoneScreen
+        playerName={player?.name}
+        onReady={() => setShowingPass(false)}
+      />
     );
   }
 
@@ -63,18 +50,29 @@ export function Wildcard() {
       gameMode="wildcard"
     >
       <GameCard>
-        <div className="text-center mb-6">
-          <div className="inline-block bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-2 rounded-full text-lg font-bold mb-4">
-            🎲 Wildcard
+        {/* Wildcard badge */}
+        <div className="text-center mb-5">
+          <div
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-base font-black"
+            style={{
+              background: 'linear-gradient(135deg, rgba(251,191,36,0.2), rgba(217,119,6,0.12))',
+              color: '#fbbf24',
+              border: '1.5px solid rgba(251,191,36,0.35)',
+            }}
+          >
+            🃏 Wildcard
           </div>
         </div>
 
-        <p className="text-3xl md:text-4xl font-bold text-center mb-12 leading-relaxed">
+        <p
+          className="text-2xl font-black text-center mb-12 leading-snug"
+          style={{ color: 'var(--text-primary)' }}
+        >
           {prompt.prompt}
         </p>
 
         <Button onClick={handleNext} variant="primary" size="lg" className="w-full">
-          Next
+          Next →
         </Button>
       </GameCard>
     </GameLayout>

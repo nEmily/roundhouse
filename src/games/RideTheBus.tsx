@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
-import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { GameLayout, GameCard, Button, PassPhoneScreen } from '../components/GameCard';
 import { hapticSuccess, hapticBuzz } from '../utils/haptics';
 
-// Card types and utilities
 type Suit = 'hearts' | 'diamonds' | 'clubs' | 'spades';
-type CardValue = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14; // 11=J, 12=Q, 13=K, 14=A
+type CardValue = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14;
 
 interface Card {
   suit: Suit;
@@ -34,18 +33,11 @@ function getCardDisplay(card: Card): string {
   return values[card.value];
 }
 
-function getSuitEmoji(suit: Suit): string {
-  const emojis: Record<Suit, string> = {
-    hearts: '♥️',
-    diamonds: '♦️',
-    clubs: '♣️',
-    spades: '♠️',
+function getSuitSymbol(suit: Suit): string {
+  const symbols: Record<Suit, string> = {
+    hearts: '♥', diamonds: '♦', clubs: '♣', spades: '♠',
   };
-  return emojis[suit];
-}
-
-function getSuitColor(suit: Suit): string {
-  return suit === 'hearts' || suit === 'diamonds' ? 'text-red-500' : 'text-slate-200';
+  return symbols[suit];
 }
 
 function isRed(suit: Suit): boolean {
@@ -77,142 +69,62 @@ export function RideTheBus() {
   const player = getCurrentPlayer();
 
   useEffect(() => {
-    // Start fresh ride
-    setRound({
-      cards: [],
-      phase: 'red-or-black',
-      revealed: false,
-    });
+    setRound({ cards: [], phase: 'red-or-black', revealed: false });
     setGameStarted(true);
   }, [intensity]);
 
   const handleRedOrBlackGuess = (guessColor: 'red' | 'black') => {
     if (!deck.length || round.revealed) return;
-
     const nextCard = deck[0];
     const cardColor = isRed(nextCard.suit) ? 'red' : 'black';
     const correct = guessColor === cardColor;
-
-    setRound({
-      cards: [nextCard],
-      phase: correct ? 'higher-or-lower' : 'reveal',
-      revealed: true,
-      guess: guessColor,
-      correct,
-    });
-
-    if (!correct && player) {
-      updatePlayerScore(player.id, -1); // Drink penalty
-      hapticBuzz();
-    } else {
-      hapticSuccess();
-    }
-
+    setRound({ cards: [nextCard], phase: correct ? 'higher-or-lower' : 'reveal', revealed: true, guess: guessColor, correct });
+    if (!correct && player) { updatePlayerScore(player.id, -1); hapticBuzz(); } else { hapticSuccess(); }
     setDeck(deck.slice(1));
   };
 
   const handleHigherOrLowerGuess = (guess: 'higher' | 'lower') => {
     if (!deck.length || round.revealed || round.cards.length !== 1) return;
-
     const firstCard = round.cards[0];
     const nextCard = deck[0];
-    const correct =
-      (guess === 'higher' && nextCard.value > firstCard.value) ||
-      (guess === 'lower' && nextCard.value < firstCard.value);
-
-    setRound({
-      cards: [...round.cards, nextCard],
-      phase: correct ? 'inside-or-outside' : 'reveal',
-      revealed: true,
-      guess,
-      correct,
-    });
-
-    if (!correct && player) {
-      updatePlayerScore(player.id, -1);
-      hapticBuzz();
-    } else {
-      hapticSuccess();
-    }
-
+    const correct = (guess === 'higher' && nextCard.value > firstCard.value) || (guess === 'lower' && nextCard.value < firstCard.value);
+    setRound({ cards: [...round.cards, nextCard], phase: correct ? 'inside-or-outside' : 'reveal', revealed: true, guess, correct });
+    if (!correct && player) { updatePlayerScore(player.id, -1); hapticBuzz(); } else { hapticSuccess(); }
     setDeck(deck.slice(1));
   };
 
   const handleInsideOrOutsideGuess = (guess: 'inside' | 'outside') => {
     if (!deck.length || round.revealed || round.cards.length !== 2) return;
-
     const [card1, card2] = round.cards;
     const min = Math.min(card1.value, card2.value);
     const max = Math.max(card1.value, card2.value);
     const nextCard = deck[0];
-
-    const correct =
-      (guess === 'inside' && nextCard.value > min && nextCard.value < max) ||
-      (guess === 'outside' && (nextCard.value <= min || nextCard.value >= max));
-
-    setRound({
-      cards: [...round.cards, nextCard],
-      phase: correct ? 'guess-suit' : 'reveal',
-      revealed: true,
-      guess,
-      correct,
-    });
-
-    if (!correct && player) {
-      updatePlayerScore(player.id, -1);
-      hapticBuzz();
-    } else {
-      hapticSuccess();
-    }
-
+    const correct = (guess === 'inside' && nextCard.value > min && nextCard.value < max) || (guess === 'outside' && (nextCard.value <= min || nextCard.value >= max));
+    setRound({ cards: [...round.cards, nextCard], phase: correct ? 'guess-suit' : 'reveal', revealed: true, guess, correct });
+    if (!correct && player) { updatePlayerScore(player.id, -1); hapticBuzz(); } else { hapticSuccess(); }
     setDeck(deck.slice(1));
   };
 
   const handleSuitGuess = (guessedSuit: Suit) => {
     if (!deck.length || round.revealed || round.cards.length !== 3) return;
-
     const nextCard = deck[0];
     const correct = guessedSuit === nextCard.suit;
-
-    setRound({
-      cards: [...round.cards, nextCard],
-      phase: 'reveal',
-      revealed: true,
-      guess: guessedSuit,
-      correct,
-    });
-
+    setRound({ cards: [...round.cards, nextCard], phase: 'reveal', revealed: true, guess: guessedSuit, correct });
     if (correct && player) {
-      updatePlayerScore(player.id, 3); // Bonus for completing the bus
+      updatePlayerScore(player.id, 3);
       setRideCount(new Map(rideCount.set(player.id, (rideCount.get(player.id) || 0) + 1)));
       hapticSuccess();
-    } else if (player) {
-      updatePlayerScore(player.id, -1);
-      hapticBuzz();
-    }
-
+    } else if (player) { updatePlayerScore(player.id, -1); hapticBuzz(); }
     setDeck(deck.slice(1));
   };
 
   const handleNext = () => {
     if (round.correct) {
-      // Successfully got off the bus
-      setRound({
-        cards: [],
-        phase: 'red-or-black',
-        revealed: false,
-      });
+      setRound({ cards: [], phase: 'red-or-black', revealed: false });
       nextTurn();
-      if (players.length > 0) {
-        setShowingPass(true);
-      }
+      if (players.length > 0) { setShowingPass(true); }
     } else {
-      // Failed, reset round
-      setRound({
-        cards: [],
-        phase: 'red-or-black',
-        revealed: false,
-      });
+      setRound({ cards: [], phase: 'red-or-black', revealed: false });
     }
   };
 
@@ -220,29 +132,18 @@ export function RideTheBus() {
 
   if (showingPass) {
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
-        <div className="text-center max-w-2xl w-full">
-          <div className="text-5xl mb-6">📱</div>
-          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
-          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
-            {player?.name}!
-          </div>
-          <button
-            onClick={() => setShowingPass(false)}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
-          >
-            Ready
-          </button>
-        </div>
-      </div>
+      <PassPhoneScreen
+        playerName={player?.name}
+        onReady={() => setShowingPass(false)}
+      />
     );
   }
 
-  const isRedBlackPhase = round.phase === 'red-or-black' && !round.revealed;
-  const isHigherLowerPhase = round.phase === 'higher-or-lower' && !round.revealed;
-  const isInsideOutsidePhase = round.phase === 'inside-or-outside' && !round.revealed;
-  const isGuessPhase = round.phase === 'guess-suit' && !round.revealed;
-  const isRevealPhase = round.phase === 'reveal' || round.revealed;
+  const isRedBlackPhase   = round.phase === 'red-or-black'     && !round.revealed;
+  const isHigherLowerPhase = round.phase === 'higher-or-lower'  && !round.revealed;
+  const isInsideOutPhase   = round.phase === 'inside-or-outside' && !round.revealed;
+  const isGuessPhase       = round.phase === 'guess-suit'       && !round.revealed;
+  const isRevealPhase      = round.phase === 'reveal'           || round.revealed;
 
   const currentPhaseNum = ['red-or-black', 'higher-or-lower', 'inside-or-outside', 'guess-suit'].indexOf(round.phase) + 1;
 
@@ -253,98 +154,132 @@ export function RideTheBus() {
       playerName={player?.name}
     >
       <GameCard>
-        {/* Phase indicator */}
+        {/* Phase stepper */}
         <div className="flex gap-2 mb-6 justify-center">
           {[1, 2, 3, 4].map(num => (
             <div
               key={num}
-              className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
+              className="phase-dot"
+              style={
                 num < currentPhaseNum
-                  ? 'bg-green-600 text-white'
+                  ? { backgroundColor: 'rgba(62,207,122,0.18)', color: '#3ecf7a', border: '1.5px solid rgba(62,207,122,0.35)' }
                   : num === currentPhaseNum
-                  ? 'bg-amber-600 text-white'
-                  : 'bg-slate-700 text-slate-400'
-              }`}
+                  ? { backgroundColor: 'rgba(245,166,35,0.18)', color: '#f5a623', border: '1.5px solid rgba(245,166,35,0.4)' }
+                  : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1.5px solid var(--border-subtle)' }
+              }
             >
-              {num}
+              {num < currentPhaseNum ? '✓' : num}
             </div>
           ))}
         </div>
 
-        {/* Cards display */}
-        <div className="flex gap-3 justify-center mb-8 min-h-32">
+        {/* Card display */}
+        <div className="flex gap-2.5 justify-center mb-6 min-h-28">
           {round.cards.map((card, idx) => (
             <div
               key={idx}
-              className={`w-20 h-28 rounded-lg border-2 flex flex-col items-center justify-center transition-all ${
-                getSuitColor(card.suit)
-              } ${
-                isRed(card.suit) ? 'border-red-500 bg-red-950' : 'border-slate-400 bg-slate-900'
-              }`}
+              className="w-[4.5rem] h-24 rounded-xl flex flex-col items-center justify-center"
+              style={{
+                background: '#fff8f0',
+                color: isRed(card.suit) ? '#ef4444' : '#1e293b',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.45)',
+                border: '1.5px solid rgba(200,150,100,0.25)',
+              }}
             >
-              <div className="text-3xl font-bold">{getCardDisplay(card)}</div>
-              <div className="text-2xl">{getSuitEmoji(card.suit)}</div>
+              <div className="text-2xl font-black leading-none">{getCardDisplay(card)}</div>
+              <div className="text-2xl leading-none">{getSuitSymbol(card.suit)}</div>
             </div>
           ))}
         </div>
 
-        {/* Round prompt */}
-        <h2 className="text-2xl font-bold text-center mb-8">
-          {isRedBlackPhase && "Red or Black?"}
-          {isHigherLowerPhase && "Higher or Lower?"}
-          {isInsideOutsidePhase && "Inside or Outside?"}
-          {isGuessPhase && "Guess the Suit"}
-          {isRevealPhase && (round.correct ? "✅ Correct!" : "❌ Wrong!")}
+        {/* Prompt */}
+        <h2
+          className="text-xl font-black text-center mb-6"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          {isRedBlackPhase && 'Red or Black?'}
+          {isHigherLowerPhase && 'Higher or Lower?'}
+          {isInsideOutPhase && 'Inside or Outside?'}
+          {isGuessPhase && 'Guess the Suit'}
+          {isRevealPhase && (
+            <span style={{ color: round.correct ? '#3ecf7a' : '#f06040' }}>
+              {round.correct ? '✓ Correct!' : '✗ Wrong!'}
+            </span>
+          )}
         </h2>
 
-        {/* Buttons for guesses */}
+        {/* Guess buttons */}
         {isRedBlackPhase && (
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <Button onClick={() => handleRedOrBlackGuess('red')} variant="primary" className="w-full">
-              Red ♥️
-            </Button>
-            <Button onClick={() => handleRedOrBlackGuess('black')} variant="primary" className="w-full">
-              Black ♠️
-            </Button>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <button
+              onClick={() => handleRedOrBlackGuess('red')}
+              className="btn w-full btn-md"
+              style={{ background: 'linear-gradient(160deg, #ef4444, #b91c1c)', color: '#fff', boxShadow: '0 4px 12px rgba(239,68,68,0.3)' }}
+            >
+              Red ♥
+            </button>
+            <button
+              onClick={() => handleRedOrBlackGuess('black')}
+              className="btn w-full btn-md"
+              style={{ background: 'linear-gradient(160deg, #475569, #1e293b)', color: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
+            >
+              Black ♠
+            </button>
           </div>
         )}
 
         {isHigherLowerPhase && (
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <Button onClick={() => handleHigherOrLowerGuess('higher')} variant="primary" className="w-full">
-              Higher ⬆️
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <Button onClick={() => handleHigherOrLowerGuess('higher')} variant="primary" size="md" className="w-full">
+              Higher ↑
             </Button>
-            <Button onClick={() => handleHigherOrLowerGuess('lower')} variant="primary" className="w-full">
-              Lower ⬇️
+            <Button onClick={() => handleHigherOrLowerGuess('lower')} variant="secondary" size="md" className="w-full">
+              Lower ↓
             </Button>
           </div>
         )}
 
-        {isInsideOutsidePhase && (
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <Button onClick={() => handleInsideOrOutsideGuess('inside')} variant="primary" className="w-full">
-              Inside 📏
+        {isInsideOutPhase && (
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <Button onClick={() => handleInsideOrOutsideGuess('inside')} variant="primary" size="md" className="w-full">
+              Inside
             </Button>
-            <Button onClick={() => handleInsideOrOutsideGuess('outside')} variant="primary" className="w-full">
-              Outside 🚫
+            <Button onClick={() => handleInsideOrOutsideGuess('outside')} variant="secondary" size="md" className="w-full">
+              Outside
             </Button>
           </div>
         )}
 
         {isGuessPhase && (
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <Button onClick={() => handleSuitGuess('hearts')} variant="primary" className="w-full text-red-400">
-              Hearts ♥️
-            </Button>
-            <Button onClick={() => handleSuitGuess('diamonds')} variant="primary" className="w-full text-red-400">
-              Diamonds ♦️
-            </Button>
-            <Button onClick={() => handleSuitGuess('clubs')} variant="primary" className="w-full">
-              Clubs ♣️
-            </Button>
-            <Button onClick={() => handleSuitGuess('spades')} variant="primary" className="w-full">
-              Spades ♠️
-            </Button>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <button
+              onClick={() => handleSuitGuess('hearts')}
+              className="btn w-full btn-md"
+              style={{ background: 'linear-gradient(160deg, #ef4444, #b91c1c)', color: '#fff', boxShadow: '0 4px 12px rgba(239,68,68,0.3)' }}
+            >
+              ♥ Hearts
+            </button>
+            <button
+              onClick={() => handleSuitGuess('diamonds')}
+              className="btn w-full btn-md"
+              style={{ background: 'linear-gradient(160deg, #f97316, #c2410c)', color: '#fff', boxShadow: '0 4px 12px rgba(249,115,22,0.3)' }}
+            >
+              ♦ Diamonds
+            </button>
+            <button
+              onClick={() => handleSuitGuess('clubs')}
+              className="btn w-full btn-md"
+              style={{ background: 'linear-gradient(160deg, #475569, #1e293b)', color: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
+            >
+              ♣ Clubs
+            </button>
+            <button
+              onClick={() => handleSuitGuess('spades')}
+              className="btn w-full btn-md"
+              style={{ background: 'linear-gradient(160deg, #334155, #0f172a)', color: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
+            >
+              ♠ Spades
+            </button>
           </div>
         )}
 
@@ -355,21 +290,37 @@ export function RideTheBus() {
             size="lg"
             className="w-full"
           >
-            {round.correct ? `You're Off the Bus! (${player ? rideCount.get(player.id) || 0 : 0} rides)` : 'Start Over (or drink & quit)'}
+            {round.correct
+              ? `Off the Bus! (${player ? rideCount.get(player.id) || 0 : 0} rides)`
+              : 'Start Over'}
           </Button>
         )}
 
-        {/* Ride count tracker — only show when tracking players */}
+        {/* Ride count tracker */}
         {players.length > 0 && (
-          <div className="mt-8 pt-6 border-t border-slate-600">
-            <h3 className="text-sm text-slate-400 text-center mb-3">Bus Rides Completed</h3>
-            <div className="space-y-2">
+          <div
+            className="mt-6 pt-5"
+            style={{ borderTop: '1px solid var(--border-subtle)' }}
+          >
+            <h3
+              className="text-xs font-black uppercase tracking-widest text-center mb-3"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              Bus Rides Completed
+            </h3>
+            <div className="space-y-1.5">
               {players.map(p => (
-                <div key={p.id} className="flex justify-between items-center text-sm">
-                  <span className={p.id === player?.id ? 'text-white font-bold' : 'text-slate-400'}>
+                <div key={p.id} className="flex justify-between items-center">
+                  <span
+                    className="text-sm font-bold"
+                    style={{ color: p.id === player?.id ? 'var(--text-primary)' : 'var(--text-muted)' }}
+                  >
                     {p.name}
                   </span>
-                  <span className="text-amber-400 font-bold">
+                  <span
+                    className="text-sm font-black"
+                    style={{ color: 'var(--amber-bright)' }}
+                  >
                     {rideCount.get(p.id) || 0}
                   </span>
                 </div>

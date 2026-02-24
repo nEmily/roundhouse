@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
-import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { GameLayout, GameCard, Button, PassPhoneScreen } from '../components/GameCard';
 import { triviaQuestions } from '../data/trivia';
 import { hapticSuccess, hapticBuzz } from '../utils/haptics';
 
@@ -15,10 +15,8 @@ export function Trivia() {
   const player = getCurrentPlayer();
 
   useEffect(() => {
-    // Filter questions by intensity (<=) and not already used
     let filtered = triviaQuestions.filter((q, idx) => q.intensity <= intensity && !usedQuestionIds.has(idx));
 
-    // If all questions used, reset and use any available
     if (filtered.length === 0) {
       setUsedQuestionIds(new Set());
       filtered = triviaQuestions.filter(q => q.intensity <= intensity);
@@ -58,21 +56,10 @@ export function Trivia() {
 
   if (showingPass) {
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
-        <div className="text-center max-w-2xl w-full">
-          <div className="text-5xl mb-6">📱</div>
-          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
-          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
-            {player?.name}!
-          </div>
-          <button
-            onClick={() => setShowingPass(false)}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
-          >
-            Ready
-          </button>
-        </div>
-      </div>
+      <PassPhoneScreen
+        playerName={player?.name}
+        onReady={() => setShowingPass(false)}
+      />
     );
   }
 
@@ -83,32 +70,55 @@ export function Trivia() {
       gameMode="trivia"
     >
       <GameCard>
-        <div className="text-center mb-6">
-          <div className="inline-block bg-slate-700 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide">
+        {/* Category pill */}
+        <div className="text-center mb-5">
+          <div
+            className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"
+            style={{
+              backgroundColor: 'rgba(56,189,248,0.12)',
+              color: '#38bdf8',
+              border: '1px solid rgba(56,189,248,0.25)',
+            }}
+          >
             {question.category.replaceAll('-', ' ')}
           </div>
         </div>
 
-        <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 leading-relaxed">
+        <h3
+          className="text-xl font-black text-center mb-7 leading-snug"
+          style={{ color: 'var(--text-primary)' }}
+        >
           {question.question}
         </h3>
 
-        <div className="grid grid-cols-1 gap-3 mb-6">
+        {/* Answer options */}
+        <div className="grid grid-cols-1 gap-2.5 mb-5">
           {question.options.map((option) => {
             const isSelected = selectedAnswer === option;
             const isCorrectAnswer = option === question.answer;
 
-            let buttonClasses = '';
+            let extraStyle: React.CSSProperties = {};
             if (revealed) {
               if (isCorrectAnswer) {
-                buttonClasses = 'bg-green-600 hover:bg-green-600';
+                extraStyle = {
+                  background: 'linear-gradient(160deg, #3ecf7a, #1fad5c)',
+                  color: '#051a0e',
+                  border: 'none',
+                  boxShadow: '0 4px 12px rgba(62,207,122,0.3)',
+                };
               } else if (isSelected && !isCorrectAnswer) {
-                buttonClasses = 'bg-red-600 hover:bg-red-600';
+                extraStyle = {
+                  background: 'linear-gradient(160deg, #f06040, #c73e22)',
+                  color: '#200800',
+                  border: 'none',
+                  boxShadow: '0 4px 12px rgba(240,96,64,0.3)',
+                };
               } else {
-                buttonClasses = 'bg-slate-700 opacity-50';
+                extraStyle = {
+                  opacity: 0.3,
+                  backgroundColor: 'var(--bg-elevated)',
+                };
               }
-            } else {
-              buttonClasses = isSelected ? 'bg-amber-600' : 'bg-slate-700 hover:bg-slate-600';
             }
 
             return (
@@ -116,7 +126,13 @@ export function Trivia() {
                 key={option}
                 onClick={() => handleAnswer(option)}
                 disabled={revealed}
-                className={`${buttonClasses} text-white text-lg px-6 py-4 rounded-xl font-medium transition-all disabled:cursor-default`}
+                className="w-full text-left rounded-xl px-5 py-4 font-bold text-base transition-all disabled:cursor-default"
+                style={{
+                  backgroundColor: revealed ? undefined : 'var(--bg-elevated)',
+                  color: revealed ? undefined : 'var(--text-primary)',
+                  border: revealed ? undefined : '1px solid var(--border-subtle)',
+                  ...extraStyle,
+                }}
               >
                 {option}
               </button>
@@ -124,15 +140,23 @@ export function Trivia() {
           })}
         </div>
 
+        {/* Result feedback */}
         {revealed && (
-          <>
-            <div className={`text-center text-2xl font-bold mb-6 ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
-              {isCorrect ? '✓ Correct! +1 point' : '✗ Wrong!'}
+          <div className="animate-fade-in">
+            <div
+              className="text-center text-xl font-black mb-5 py-3 rounded-xl"
+              style={{
+                color: isCorrect ? '#3ecf7a' : '#f06040',
+                backgroundColor: isCorrect ? 'rgba(62,207,122,0.08)' : 'rgba(240,96,64,0.08)',
+                border: `1px solid ${isCorrect ? 'rgba(62,207,122,0.2)' : 'rgba(240,96,64,0.2)'}`,
+              }}
+            >
+              {isCorrect ? '✓ Correct! +1 point' : '✗ Wrong! Drink up 🍺'}
             </div>
             <Button onClick={handleNext} variant="primary" size="lg" className="w-full">
-              Next
+              Next →
             </Button>
-          </>
+          </div>
         )}
       </GameCard>
     </GameLayout>

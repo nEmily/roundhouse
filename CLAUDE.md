@@ -78,3 +78,7 @@ You are **Claudion**, mayor of Pixietown. You coordinate a team of specialist te
 ## Validate
 
 Run `/validate` after any meaningful code changes.
+
+## Kanban Board
+This project is tracked on the Obsidian kanban board (`board/Board.md`).
+Project card: `board/roundhouse.md`

@@ -16,6 +16,23 @@ export const GAME_NAMES: Record<string, string> = {
   'slevens': 'Slevens',
 };
 
+// Per-game accent colors for the header pill
+const GAME_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  'truth-or-dare':  { bg: 'rgba(167, 139, 250, 0.15)', text: '#a78bfa', border: 'rgba(167,139,250,0.3)' },
+  'hot-seat':       { bg: 'rgba(240, 96, 64, 0.15)',   text: '#f06040', border: 'rgba(240,96,64,0.3)' },
+  'trivia':         { bg: 'rgba(56, 189, 248, 0.15)',   text: '#38bdf8', border: 'rgba(56,189,248,0.3)' },
+  'would-you-rather': { bg: 'rgba(245, 166, 35, 0.15)', text: '#f5a623', border: 'rgba(245,166,35,0.3)' },
+  'challenges':     { bg: 'rgba(240, 96, 64, 0.15)',   text: '#f06040', border: 'rgba(240,96,64,0.3)' },
+  'hot-takes':      { bg: 'rgba(240, 96, 64, 0.15)',   text: '#f06040', border: 'rgba(240,96,64,0.3)' },
+  'wildcard':       { bg: 'rgba(251, 191, 36, 0.15)',   text: '#fbbf24', border: 'rgba(251,191,36,0.3)' },
+  'wavelength':     { bg: 'rgba(56, 189, 248, 0.15)',   text: '#38bdf8', border: 'rgba(56,189,248,0.3)' },
+  'herd-mentality': { bg: 'rgba(245, 166, 35, 0.15)',   text: '#f5a623', border: 'rgba(245,166,35,0.3)' },
+  'cap-or-fax':     { bg: 'rgba(167, 139, 250, 0.15)', text: '#a78bfa', border: 'rgba(167,139,250,0.3)' },
+  'kings-cup':      { bg: 'rgba(251, 191, 36, 0.15)',   text: '#fbbf24', border: 'rgba(251,191,36,0.3)' },
+  'ride-the-bus':   { bg: 'rgba(56, 189, 248, 0.15)',   text: '#38bdf8', border: 'rgba(56,189,248,0.3)' },
+  'slevens':        { bg: 'rgba(62, 207, 122, 0.15)',   text: '#3ecf7a', border: 'rgba(62,207,122,0.3)' },
+};
+
 interface GameCardProps {
   children: ReactNode;
   className?: string;
@@ -23,7 +40,7 @@ interface GameCardProps {
 
 export function GameCard({ children, className = '' }: GameCardProps) {
   return (
-    <div className={`bg-slate-800 rounded-3xl p-8 shadow-xl ${className}`}>
+    <div className={`game-card ${className}`}>
       {children}
     </div>
   );
@@ -46,26 +63,24 @@ export function Button({
   className = '',
   disabled = false
 }: ButtonProps) {
-  const baseClasses = 'font-bold rounded-2xl transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed active:scale-95';
+  const variantClass = {
+    primary:   'btn-primary',
+    secondary: 'btn-secondary',
+    success:   'btn-success',
+    danger:    'btn-danger',
+  }[variant];
 
-  const variantClasses = {
-    primary: 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white',
-    secondary: 'bg-slate-700 hover:bg-slate-600 text-white',
-    success: 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white',
-    danger: 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white',
-  };
-
-  const sizeClasses = {
-    sm: 'text-lg px-6 py-3',
-    md: 'text-xl px-8 py-4',
-    lg: 'text-2xl px-12 py-5',
-  };
+  const sizeClass = {
+    sm: 'btn-sm',
+    md: 'btn-md',
+    lg: 'btn-lg',
+  }[size];
 
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`btn ${variantClass} ${sizeClass} ${className}`}
     >
       {children}
     </button>
@@ -80,34 +95,101 @@ interface GameLayoutProps {
 }
 
 export function GameLayout({ children, round, playerName, gameMode }: GameLayoutProps) {
+  const colors = gameMode ? GAME_COLORS[gameMode] : null;
+
   return (
-    <div className="min-h-dvh bg-slate-900 text-slate-50 px-6 pt-8 pb-10 flex flex-col animate-fade-in safe-area-padding">
-      {/* Header — right-padded to avoid Quit button overlap */}
+    <div
+      className="min-h-dvh text-warm-primary px-5 flex flex-col animate-fade-in safe-area-padding"
+      style={{ backgroundColor: 'var(--bg-base)', paddingTop: 'max(env(safe-area-inset-top), 1rem)' }}
+    >
+      {/* Header */}
       {(round || playerName || gameMode) && (
-        <div className="text-center mb-6 pr-16">
-          {round && (
-            <div className="text-sm text-slate-500 mb-1">
-              Round {round}
-            </div>
-          )}
-          {gameMode && (
-            <div className="text-2xl font-bold mb-1">
+        <div className="text-center mb-5 pr-16 pt-1">
+          {/* Game mode pill */}
+          {gameMode && colors && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold mb-2"
+              style={{ backgroundColor: colors.bg, color: colors.text, border: `1px solid ${colors.border}` }}
+            >
               {GAME_NAMES[gameMode] || gameMode.replaceAll('-', ' ')}
             </div>
           )}
-          {playerName && (
-            <div className="text-lg text-amber-400">
-              {playerName}'s turn
-            </div>
-          )}
+          <div className="flex items-center justify-center gap-3">
+            {round && (
+              <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                Round {round}
+              </span>
+            )}
+            {round && playerName && (
+              <span style={{ color: 'var(--border-mid)' }}>·</span>
+            )}
+            {playerName && (
+              <span className="text-sm font-bold" style={{ color: 'var(--text-secondary)' }}>
+                {playerName}'s turn
+              </span>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Content — biased upward, not true-centered */}
-      <div className="flex-1 flex items-start justify-center pt-[3vh]">
+      {/* Content area */}
+      <div className="flex-1 flex items-start justify-center pt-[2vh]">
         <div className="w-full max-w-2xl">
           {children}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Shared PassPhone screen — extracted so games can use it
+interface PassPhoneProps {
+  playerName?: string;
+  onReady: () => void;
+}
+
+export function PassPhoneScreen({ playerName, onReady }: PassPhoneProps) {
+  return (
+    <div
+      className="min-h-dvh flex items-center justify-center p-6 safe-area-padding animate-slide-up"
+      style={{ backgroundColor: 'var(--bg-surface)' }}
+    >
+      {/* Subtle background accent */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 40%, rgba(245,166,35,0.08) 0%, transparent 65%)',
+        }}
+      />
+      <div className="text-center max-w-sm w-full relative z-10">
+        {/* Big phone icon */}
+        <div className="text-6xl mb-5 animate-bounce-in">📱</div>
+
+        <p
+          className="text-xl font-bold mb-3"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          Pass the phone to
+        </p>
+
+        <div
+          className="text-5xl font-black mb-10 animate-glow leading-tight"
+          style={{
+            background: 'linear-gradient(135deg, #f5a623 0%, #ff7b4a 50%, #f5a623 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          {playerName || 'Next Player'}!
+        </div>
+
+        <button
+          onClick={onReady}
+          className="btn btn-success btn-lg w-full text-2xl py-5"
+          style={{ borderRadius: '1.25rem' }}
+        >
+          I'm Ready
+        </button>
       </div>
     </div>
   );

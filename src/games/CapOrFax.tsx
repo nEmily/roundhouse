@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useGame } from '../hooks/useGame';
-import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { GameLayout, GameCard, Button, PassPhoneScreen } from '../components/GameCard';
 import { capOrFaxPrompts } from '../data/cap-or-fax';
 import { hapticSuccess } from '../utils/haptics';
 
@@ -29,7 +29,6 @@ export function CapOrFax() {
     const randomIdx = capOrFaxPrompts.findIndex(p => p === random);
     setPrompt(random);
     setUsedPromptIds(prev => new Set(prev).add(randomIdx));
-
     setPhase('instruction');
   };
 
@@ -57,23 +56,14 @@ export function CapOrFax() {
 
   if (showingPass) {
     return (
-      <div className="min-h-dvh bg-slate-900 text-slate-50 flex items-center justify-center p-6 safe-area-padding animate-fade-in">
-        <div className="text-center max-w-2xl w-full">
-          <div className="text-5xl mb-6">📱</div>
-          <div className="text-4xl font-bold mb-8">Pass the phone to</div>
-          <div className="text-6xl font-bold mb-12 bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent animate-glow">
-            {currentPlayer?.name}!
-          </div>
-          <button
-            onClick={() => setShowingPass(false)}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-3xl px-16 py-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg active:scale-95"
-          >
-            Ready
-          </button>
-        </div>
-      </div>
+      <PassPhoneScreen
+        playerName={currentPlayer?.name}
+        onReady={() => setShowingPass(false)}
+      />
     );
   }
+
+  const isCap = instruction === 'cap';
 
   return (
     <GameLayout
@@ -83,29 +73,62 @@ export function CapOrFax() {
     >
       {phase === 'instruction' && (
         <GameCard>
-          <div className="text-center mb-8">
-            <div className={`inline-block px-8 py-4 rounded-2xl text-3xl font-bold mb-6 ${
-              instruction === 'cap' ? 'bg-orange-600' : 'bg-blue-600'
-            }`}>
-              {instruction === 'cap' ? '🧢 CAP' : '📠 FAX'}
+          {/* Secret assignment */}
+          <div className="text-center mb-6">
+            <div
+              className="inline-flex flex-col items-center px-8 py-5 rounded-2xl mb-4"
+              style={isCap ? {
+                background: 'linear-gradient(135deg, rgba(240,96,64,0.2), rgba(199,62,34,0.15))',
+                border: '2px solid rgba(240,96,64,0.4)',
+              } : {
+                background: 'linear-gradient(135deg, rgba(56,189,248,0.2), rgba(14,165,233,0.15))',
+                border: '2px solid rgba(56,189,248,0.4)',
+              }}
+            >
+              <span className="text-4xl mb-1.5">{isCap ? '🧢' : '📠'}</span>
+              <span
+                className="text-3xl font-black"
+                style={{ color: isCap ? '#f06040' : '#38bdf8' }}
+              >
+                {isCap ? 'CAP' : 'FAX'}
+              </span>
             </div>
-            <p className="text-xl mb-2">
-              {instruction === 'cap' ? 'Make it up!' : 'Tell the truth!'}
+            <p
+              className="text-lg font-black"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              {isCap ? 'Make it up!' : 'Tell the truth!'}
             </p>
           </div>
 
-          <div className="bg-slate-700 p-6 rounded-xl mb-10">
-            <p className="text-2xl md:text-3xl text-center leading-relaxed">
+          {/* Prompt */}
+          <div
+            className="rounded-2xl p-5 mb-8"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              border: '1px solid var(--border-mid)',
+            }}
+          >
+            <p
+              className="text-xl font-black text-center leading-snug"
+              style={{ color: 'var(--text-primary)' }}
+            >
               {prompt.text}
             </p>
-            {prompt.type === 'list' && instruction === 'cap' && (
-              <p className="text-sm text-slate-400 text-center mt-4">
+            {prompt.type === 'list' && isCap && (
+              <p
+                className="text-sm text-center mt-3"
+                style={{ color: 'var(--text-muted)' }}
+              >
                 (Slip in 1 fake answer)
               </p>
             )}
           </div>
 
-          <p className="text-center text-slate-400 mb-6">
+          <p
+            className="text-center text-sm font-semibold mb-5"
+            style={{ color: 'var(--text-muted)' }}
+          >
             Tell your story, then let everyone guess!
           </p>
 
@@ -117,27 +140,52 @@ export function CapOrFax() {
 
       {phase === 'reveal' && (
         <GameCard>
-          <div className="text-center mb-10">
-            <h2 className="text-4xl font-bold mb-6">
+          <div className="text-center mb-8">
+            <h2
+              className="text-3xl font-black mb-5"
+              style={{ color: 'var(--text-primary)' }}
+            >
               It was...
             </h2>
-            <div className={`inline-block px-10 py-5 rounded-2xl text-5xl font-bold ${
-              instruction === 'cap' ? 'bg-orange-600' : 'bg-blue-600'
-            }`}>
-              {instruction === 'cap' ? '🧢 CAP!' : '📠 FAX!'}
+            <div
+              className="inline-flex flex-col items-center px-10 py-5 rounded-2xl animate-bounce-in"
+              style={isCap ? {
+                background: 'linear-gradient(135deg, rgba(240,96,64,0.25), rgba(199,62,34,0.2))',
+                border: '2px solid rgba(240,96,64,0.5)',
+              } : {
+                background: 'linear-gradient(135deg, rgba(56,189,248,0.25), rgba(14,165,233,0.2))',
+                border: '2px solid rgba(56,189,248,0.5)',
+              }}
+            >
+              <span className="text-4xl mb-1">{isCap ? '🧢' : '📠'}</span>
+              <span
+                className="text-4xl font-black"
+                style={{ color: isCap ? '#f06040' : '#38bdf8' }}
+              >
+                {isCap ? 'CAP!' : 'FAX!'}
+              </span>
             </div>
           </div>
 
-          <div className="bg-slate-700/50 rounded-2xl p-5 text-center mb-10">
-            <p className="text-lg text-slate-300">
-              {instruction === 'cap'
+          <div
+            className="rounded-2xl p-5 text-center mb-8"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              border: '1px solid var(--border-subtle)',
+            }}
+          >
+            <p
+              className="text-base font-bold"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              {isCap
                 ? 'Anyone who believed it — drink up! 🍺'
                 : 'Anyone who called cap — drink up! 🍺'}
             </p>
           </div>
 
           <Button onClick={handleNext} variant="primary" size="lg" className="w-full">
-            Next
+            Next →
           </Button>
         </GameCard>
       )}

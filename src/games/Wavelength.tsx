@@ -33,33 +33,79 @@ export function Wavelength() {
       gameMode="wavelength"
     >
       <GameCard>
+        {/* Wavelength badge */}
         <div className="text-center mb-6">
-          <div className="inline-block bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-2 rounded-full text-lg font-bold mb-4">
+          <div
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-base font-black"
+            style={{
+              backgroundColor: 'rgba(56,189,248,0.14)',
+              color: '#38bdf8',
+              border: '1.5px solid rgba(56,189,248,0.3)',
+            }}
+          >
             📡 Wavelength
           </div>
         </div>
 
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <div className="bg-slate-700 px-5 py-3 rounded-xl text-lg font-bold text-center flex-1 mr-2">
+        {/* Spectrum display */}
+        <div className="mb-8">
+          <div className="flex items-stretch gap-3 mb-4">
+            <div
+              className="flex-1 rounded-xl px-4 py-3 text-center font-black text-base"
+              style={{
+                backgroundColor: 'rgba(56,189,248,0.1)',
+                color: '#38bdf8',
+                border: '1.5px solid rgba(56,189,248,0.25)',
+              }}
+            >
               {spectrum.leftLabel}
             </div>
-            <div className="text-slate-500 text-2xl font-bold mx-2">↔</div>
-            <div className="bg-slate-700 px-5 py-3 rounded-xl text-lg font-bold text-center flex-1 ml-2">
+            <div
+              className="flex items-center font-black text-xl"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              ↔
+            </div>
+            <div
+              className="flex-1 rounded-xl px-4 py-3 text-center font-black text-base"
+              style={{
+                backgroundColor: 'rgba(167,139,250,0.1)',
+                color: '#a78bfa',
+                border: '1.5px solid rgba(167,139,250,0.25)',
+              }}
+            >
               {spectrum.rightLabel}
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-cyan-600 via-slate-600 to-blue-600 h-4 rounded-full" />
+          {/* Spectrum gradient bar */}
+          <div className="spectrum-bar" />
         </div>
 
-        <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-2 border-cyan-500/30 rounded-2xl p-6 text-center mb-10">
-          <p className="text-xl font-bold mb-2">Name something on this spectrum!</p>
-          <p className="text-base text-slate-300">Everyone debates where it falls. Outliers drink 🍺</p>
+        {/* Instructions */}
+        <div
+          className="rounded-2xl p-5 text-center mb-8"
+          style={{
+            background: 'linear-gradient(135deg, rgba(56,189,248,0.08), rgba(167,139,250,0.08))',
+            border: '1px solid rgba(56,189,248,0.18)',
+          }}
+        >
+          <p
+            className="text-lg font-black mb-1.5"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Name something on this spectrum!
+          </p>
+          <p
+            className="text-sm font-semibold"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Everyone debates where it falls. Outliers drink 🍺
+          </p>
         </div>
 
         <Button onClick={() => nextRound()} variant="primary" size="lg" className="w-full">
-          Next Round
+          Next Round →
         </Button>
       </GameCard>
     </GameLayout>
