@@ -11,6 +11,7 @@ export function CapOrFax() {
   const [prompt, setPrompt] = useState<typeof capOrFaxPrompts[0] | null>(null);
   const [usedPromptIds, setUsedPromptIds] = useState<Set<number>>(new Set());
   const [showingPass, setShowingPass] = useState(false);
+  const [nextPlayerName, setNextPlayerName] = useState<string | undefined>(undefined);
 
   const currentPlayer = getCurrentPlayer();
 
@@ -41,10 +42,13 @@ export function CapOrFax() {
     setPhase('instruction');
     setInstruction(null);
     setPrompt(null);
-    nextTurn();
     if (players.length > 0) {
+      const currentIndex = players.findIndex(p => p.id === currentPlayer?.id);
+      const nextIndex = (currentIndex + 1) % players.length;
+      setNextPlayerName(players[nextIndex]?.name);
       setShowingPass(true);
     }
+    nextTurn();
   };
 
   // Initial start
@@ -57,7 +61,7 @@ export function CapOrFax() {
   if (showingPass) {
     return (
       <PassPhoneScreen
-        playerName={currentPlayer?.name}
+        playerName={nextPlayerName}
         onReady={() => setShowingPass(false)}
       />
     );

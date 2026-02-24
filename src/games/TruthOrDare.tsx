@@ -9,6 +9,7 @@ export function TruthOrDare() {
   const [prompt, setPrompt] = useState<typeof truthOrDarePrompts[0] | null>(null);
   const [usedPromptIds, setUsedPromptIds] = useState<Set<number>>(new Set());
   const [showingPass, setShowingPass] = useState(false);
+  const [nextPlayerName, setNextPlayerName] = useState<string | undefined>(undefined);
 
   const player = getCurrentPlayer();
 
@@ -35,16 +36,19 @@ export function TruthOrDare() {
   const handleNext = () => {
     setChoice(null);
     setPrompt(null);
-    nextTurn();
     if (players.length > 0) {
+      const currentIndex = players.findIndex(p => p.id === player?.id);
+      const nextIndex = (currentIndex + 1) % players.length;
+      setNextPlayerName(players[nextIndex]?.name);
       setShowingPass(true);
     }
+    nextTurn();
   };
 
   if (showingPass) {
     return (
       <PassPhoneScreen
-        playerName={player?.name}
+        playerName={nextPlayerName}
         onReady={() => setShowingPass(false)}
       />
     );

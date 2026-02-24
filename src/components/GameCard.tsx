@@ -100,7 +100,7 @@ export function GameLayout({ children, round, playerName, gameMode }: GameLayout
   return (
     <div
       className="min-h-dvh text-warm-primary px-5 flex flex-col animate-fade-in safe-area-padding"
-      style={{ backgroundColor: 'var(--bg-base)', paddingTop: 'max(env(safe-area-inset-top), 1rem)' }}
+      style={{ backgroundColor: 'var(--bg-base)' }}
     >
       {/* Header */}
       {(round || playerName || gameMode) && (

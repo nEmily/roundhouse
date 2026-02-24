@@ -11,6 +11,7 @@ export function Trivia() {
   const [revealed, setRevealed] = useState(false);
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<number>>(new Set());
   const [showingPass, setShowingPass] = useState(false);
+  const [nextPlayerName, setNextPlayerName] = useState<string | undefined>(undefined);
 
   const player = getCurrentPlayer();
 
@@ -44,10 +45,13 @@ export function Trivia() {
   const handleNext = () => {
     setSelectedAnswer(null);
     setRevealed(false);
-    nextTurn();
     if (players.length > 0) {
+      const currentIndex = players.findIndex(p => p.id === player?.id);
+      const nextIndex = (currentIndex + 1) % players.length;
+      setNextPlayerName(players[nextIndex]?.name);
       setShowingPass(true);
     }
+    nextTurn();
   };
 
   if (!question) return null;
@@ -57,7 +61,7 @@ export function Trivia() {
   if (showingPass) {
     return (
       <PassPhoneScreen
-        playerName={player?.name}
+        playerName={nextPlayerName}
         onReady={() => setShowingPass(false)}
       />
     );

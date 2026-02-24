@@ -65,6 +65,7 @@ export function RideTheBus() {
   const [rideCount, setRideCount] = useState<Map<string, number>>(new Map());
   const [gameStarted, setGameStarted] = useState(false);
   const [showingPass, setShowingPass] = useState(false);
+  const [nextPlayerName, setNextPlayerName] = useState<string | undefined>(undefined);
 
   const player = getCurrentPlayer();
 
@@ -121,8 +122,13 @@ export function RideTheBus() {
   const handleNext = () => {
     if (round.correct) {
       setRound({ cards: [], phase: 'red-or-black', revealed: false });
+      if (players.length > 0) {
+        const currentIndex = players.findIndex(p => p.id === player?.id);
+        const nextIndex = (currentIndex + 1) % players.length;
+        setNextPlayerName(players[nextIndex]?.name);
+        setShowingPass(true);
+      }
       nextTurn();
-      if (players.length > 0) { setShowingPass(true); }
     } else {
       setRound({ cards: [], phase: 'red-or-black', revealed: false });
     }
@@ -133,7 +139,7 @@ export function RideTheBus() {
   if (showingPass) {
     return (
       <PassPhoneScreen
-        playerName={player?.name}
+        playerName={nextPlayerName}
         onReady={() => setShowingPass(false)}
       />
     );

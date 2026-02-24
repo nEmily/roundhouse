@@ -8,6 +8,7 @@ export function HotTakes() {
   const [hotTake, setHotTake] = useState<typeof hotTakesPrompts[0] | null>(null);
   const [usedHotTakeIds, setUsedHotTakeIds] = useState<Set<number>>(new Set());
   const [showingPass, setShowingPass] = useState(false);
+  const [nextPlayerName, setNextPlayerName] = useState<string | undefined>(undefined);
 
   const player = getCurrentPlayer();
 
@@ -26,10 +27,13 @@ export function HotTakes() {
   }, [intensity, currentRound]);
 
   const handleNext = () => {
-    nextTurn();
     if (players.length > 0) {
+      const currentIndex = players.findIndex(p => p.id === player?.id);
+      const nextIndex = (currentIndex + 1) % players.length;
+      setNextPlayerName(players[nextIndex]?.name);
       setShowingPass(true);
     }
+    nextTurn();
   };
 
   if (!hotTake) return null;
@@ -37,7 +41,7 @@ export function HotTakes() {
   if (showingPass) {
     return (
       <PassPhoneScreen
-        playerName={player?.name}
+        playerName={nextPlayerName}
         onReady={() => setShowingPass(false)}
       />
     );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
-import { GameLayout, GameCard, Button } from '../components/GameCard';
+import { GameLayout, GameCard, Button, PassPhoneScreen } from '../components/GameCard';
 import { generateDeck, getRuleForCard, type Suit } from '../data/kings-cup';
 
 interface DrawnCard {
@@ -10,12 +10,14 @@ interface DrawnCard {
 }
 
 export function KingsCup() {
-  const { nextRound, currentRound, nextPlayer, getCurrentPlayer } = useGame();
+  const { nextRound, currentRound, nextPlayer, getCurrentPlayer, players } = useGame();
   const [deck, setDeck] = useState<Array<{ value: string; suit: Suit; id: string }>>([]);
   const [currentCard, setCurrentCard] = useState<DrawnCard | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
   const [kingsDrawn, setKingsDrawn] = useState(0);
   const [gameEnded, setGameEnded] = useState(false);
+  const [showingPass, setShowingPass] = useState(false);
+  const [nextPlayerName, setNextPlayerName] = useState<string | undefined>(undefined);
 
   const currentPlayer = getCurrentPlayer();
 
@@ -52,6 +54,12 @@ export function KingsCup() {
     if (gameEnded) {
       nextRound();
     } else {
+      if (players.length > 0) {
+        const currentIndex = players.findIndex(p => p.id === currentPlayer?.id);
+        const nextIndex = (currentIndex + 1) % players.length;
+        setNextPlayerName(players[nextIndex]?.name);
+        setShowingPass(true);
+      }
       nextPlayer();
     }
   };
@@ -60,6 +68,15 @@ export function KingsCup() {
 
   const isRed = (suit: Suit) => suit === '♥' || suit === '♦';
   const suitColor = currentCard ? (isRed(currentCard.suit) ? '#ef4444' : '#1e293b') : '#1e293b';
+
+  if (showingPass) {
+    return (
+      <PassPhoneScreen
+        playerName={nextPlayerName}
+        onReady={() => setShowingPass(false)}
+      />
+    );
+  }
 
   return (
     <GameLayout
