@@ -46,12 +46,20 @@ function isRed(suit: Suit): boolean {
 
 type RoundPhase = 'red-or-black' | 'higher-or-lower' | 'inside-or-outside' | 'guess-suit' | 'reveal';
 
+const PHASE_DRINKS: Record<string, number> = {
+  'red-or-black': 1,
+  'higher-or-lower': 2,
+  'inside-or-outside': 3,
+  'guess-suit': 4,
+};
+
 interface RoundState {
   cards: Card[];
   phase: RoundPhase;
   revealed: boolean;
   guess?: string | boolean;
   correct?: boolean;
+  drinksOwed?: number;
 }
 
 export function RideTheBus() {
@@ -79,19 +87,22 @@ export function RideTheBus() {
     const nextCard = deck[0];
     const cardColor = isRed(nextCard.suit) ? 'red' : 'black';
     const correct = guessColor === cardColor;
-    setRound({ cards: [nextCard], phase: correct ? 'higher-or-lower' : 'reveal', revealed: true, guess: guessColor, correct });
-    if (!correct && player) { updatePlayerScore(player.id, -1); hapticBuzz(); } else { hapticSuccess(); }
-    setDeck(deck.slice(1));
+    const drinks = PHASE_DRINKS['red-or-black'];
+    setRound({ cards: [nextCard], phase: correct ? 'higher-or-lower' : 'reveal', revealed: true, guess: guessColor, correct, drinksOwed: correct ? undefined : drinks });
+    if (!correct && player) { updatePlayerScore(player.id, -drinks); hapticBuzz(); } else { hapticSuccess(); }
+    setDeck(prev => prev.length > 1 ? prev.slice(1) : createDeck());
   };
 
   const handleHigherOrLowerGuess = (guess: 'higher' | 'lower') => {
     if (!deck.length || round.revealed || round.cards.length !== 1) return;
     const firstCard = round.cards[0];
     const nextCard = deck[0];
+    // Equal counts as WRONG
     const correct = (guess === 'higher' && nextCard.value > firstCard.value) || (guess === 'lower' && nextCard.value < firstCard.value);
-    setRound({ cards: [...round.cards, nextCard], phase: correct ? 'inside-or-outside' : 'reveal', revealed: true, guess, correct });
-    if (!correct && player) { updatePlayerScore(player.id, -1); hapticBuzz(); } else { hapticSuccess(); }
-    setDeck(deck.slice(1));
+    const drinks = PHASE_DRINKS['higher-or-lower'];
+    setRound({ cards: [...round.cards, nextCard], phase: correct ? 'inside-or-outside' : 'reveal', revealed: true, guess, correct, drinksOwed: correct ? undefined : drinks });
+    if (!correct && player) { updatePlayerScore(player.id, -drinks); hapticBuzz(); } else { hapticSuccess(); }
+    setDeck(prev => prev.length > 1 ? prev.slice(1) : createDeck());
   };
 
   const handleInsideOrOutsideGuess = (guess: 'inside' | 'outside') => {
@@ -100,23 +111,27 @@ export function RideTheBus() {
     const min = Math.min(card1.value, card2.value);
     const max = Math.max(card1.value, card2.value);
     const nextCard = deck[0];
-    const correct = (guess === 'inside' && nextCard.value > min && nextCard.value < max) || (guess === 'outside' && (nextCard.value <= min || nextCard.value >= max));
-    setRound({ cards: [...round.cards, nextCard], phase: correct ? 'guess-suit' : 'reveal', revealed: true, guess, correct });
-    if (!correct && player) { updatePlayerScore(player.id, -1); hapticBuzz(); } else { hapticSuccess(); }
-    setDeck(deck.slice(1));
+    // Equal to boundary counts as OUTSIDE
+    const isInside = nextCard.value > min && nextCard.value < max;
+    const correct = (guess === 'inside' && isInside) || (guess === 'outside' && !isInside);
+    const drinks = PHASE_DRINKS['inside-or-outside'];
+    setRound({ cards: [...round.cards, nextCard], phase: correct ? 'guess-suit' : 'reveal', revealed: true, guess, correct, drinksOwed: correct ? undefined : drinks });
+    if (!correct && player) { updatePlayerScore(player.id, -drinks); hapticBuzz(); } else { hapticSuccess(); }
+    setDeck(prev => prev.length > 1 ? prev.slice(1) : createDeck());
   };
 
   const handleSuitGuess = (guessedSuit: Suit) => {
     if (!deck.length || round.revealed || round.cards.length !== 3) return;
     const nextCard = deck[0];
     const correct = guessedSuit === nextCard.suit;
-    setRound({ cards: [...round.cards, nextCard], phase: 'reveal', revealed: true, guess: guessedSuit, correct });
+    const drinks = PHASE_DRINKS['guess-suit'];
+    setRound({ cards: [...round.cards, nextCard], phase: 'reveal', revealed: true, guess: guessedSuit, correct, drinksOwed: correct ? undefined : drinks });
     if (correct && player) {
       updatePlayerScore(player.id, 3);
       setRideCount(new Map(rideCount.set(player.id, (rideCount.get(player.id) || 0) + 1)));
       hapticSuccess();
-    } else if (player) { updatePlayerScore(player.id, -1); hapticBuzz(); }
-    setDeck(deck.slice(1));
+    } else if (player) { updatePlayerScore(player.id, -drinks); hapticBuzz(); }
+    setDeck(prev => prev.length > 1 ? prev.slice(1) : createDeck());
   };
 
   const handleNext = () => {
@@ -209,7 +224,7 @@ export function RideTheBus() {
           {isGuessPhase && 'Guess the Suit'}
           {isRevealPhase && (
             <span style={{ color: round.correct ? '#3ecf7a' : '#f06040' }}>
-              {round.correct ? '✓ Correct!' : '✗ Wrong!'}
+              {round.correct ? '✓ Correct!' : `✗ Wrong! Drink ${round.drinksOwed || 1}!`}
             </span>
           )}
         </h2>

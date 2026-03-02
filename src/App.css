@@ -5,30 +5,336 @@
   background: linear-gradient(to bottom, transparent, var(--bg-base, #150d07));
 }
 
-/* KingsCup card flip animation */
-.card-flip-container {
-  perspective: 1000px;
+/* ===== Kings Cup — Card Ring Layout ===== */
+
+.kc-container {
+  width: 100%;
 }
 
-.card-flip-inner {
-  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  transform-style: preserve-3d;
+.kc-ring-area {
   position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 55vh;
+  margin: 0 auto;
+  transition: max-height 0.3s ease, aspect-ratio 0.3s ease;
+  --kc-ring-radius: min(38vw, 170px);
 }
 
-.card-flip-inner.flipped {
-  transform: rotateY(180deg);
+.kc-ring-area--shrunk {
+  max-height: 40vh;
+  aspect-ratio: 1 / 0.85;
 }
 
-.card-face {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+.kc-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
 }
 
-.card-face-back {
-  transform: rotateY(180deg);
+.kc-ring-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: center center;
+  cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 1;
+}
+
+.kc-ring-card--drawn {
+  cursor: default;
+  opacity: 0.45;
+  z-index: 0;
+}
+
+.kc-ring-card--next {
+  z-index: 2;
+}
+
+.kc-ring-card--next .kc-mini-card--back {
+  box-shadow: 0 0 8px 2px rgba(245, 166, 35, 0.5), 0 0 16px 4px rgba(245, 166, 35, 0.2);
+  animation: kc-pulse 1.8s ease-in-out infinite;
+}
+
+.kc-ring-card--animating {
+  z-index: 10;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
+  opacity: 0;
+}
+
+@keyframes kc-pulse {
+  0%, 100% { box-shadow: 0 0 6px 1px rgba(245,166,35,0.4), 0 0 12px 3px rgba(245,166,35,0.15); }
+  50% { box-shadow: 0 0 10px 3px rgba(245,166,35,0.6), 0 0 20px 6px rgba(245,166,35,0.25); }
+}
+
+.kc-mini-card {
+  width: 26px;
+  height: 36px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+}
+
+.kc-mini-card--back {
+  background: linear-gradient(145deg, #7c3aed 0%, #4c1d95 100%);
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.kc-mini-card--face {
+  background: #fff8f0;
+  border: 1px solid rgba(200, 150, 100, 0.4);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  line-height: 1;
+  gap: 0;
+}
+
+.kc-mini-value {
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.kc-mini-suit {
+  font-size: 8px;
+  line-height: 1;
+}
+
+.kc-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(var(--kc-ring-radius) * 1.3);
+  text-align: center;
+  z-index: 5;
+}
+
+.kc-center-idle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.kc-cup {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.kc-center-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.kc-cards-count {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.kc-crowns {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.kc-crown {
+  font-size: 1rem;
+  opacity: 0.2;
+  transition: opacity 0.3s ease, text-shadow 0.3s ease;
+  color: var(--text-muted);
+}
+
+.kc-crown--lit {
+  opacity: 1;
+  color: #fbbf24;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+.kc-warning {
+  margin-top: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(240, 96, 64, 0.12);
+  border: 1px solid rgba(240, 96, 64, 0.3);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #f06040;
+}
+
+.kc-center-reveal {
+  width: 100%;
+}
+
+.kc-flip-area {
+  display: flex;
+  justify-content: center;
+}
+
+.kc-flip-card {
+  position: relative;
+  width: 100px;
+  height: 140px;
+}
+
+.kc-flip-face {
   position: absolute;
   inset: 0;
+  border-radius: 0.75rem;
+}
+
+.kc-flip-back {
+  background: linear-gradient(145deg, #7c3aed 0%, #4c1d95 100%);
+  border: 2px solid rgba(167, 139, 250, 0.3);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+.kc-flip-front {
+  background: #fff8f0;
+  border: 2px solid rgba(200, 150, 100, 0.3);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+.kc-flip-corner-top {
+  text-align: left;
+}
+
+.kc-flip-corner-bottom {
+  text-align: right;
+  transform: rotate(180deg);
+}
+
+.kc-flip-val {
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.kc-flip-suit-small {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.kc-flip-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.kc-flip-suit-big {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.kc-flip-val-big {
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.kc-rule-area {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 0.5rem 0.25rem 0;
+}
+
+.kc-rule-box {
+  border-radius: 1rem;
+  padding: 0.875rem 1rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, rgba(245, 166, 35, 0.18), rgba(224, 122, 16, 0.12));
+  border: 1.5px solid rgba(245, 166, 35, 0.3);
+}
+
+.kc-rule-name {
+  font-size: 1.25rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 0.25rem;
+  color: #f5a623;
+}
+
+.kc-rule-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.kc-rule-explain {
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+}
+
+.kc-rule-explain p {
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.kc-king-alert {
+  border-radius: 0.75rem;
+  padding: 0.625rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  background-color: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.kc-king-alert--final {
+  background-color: rgba(240, 96, 64, 0.2);
+  border-color: rgba(240, 96, 64, 0.4);
+}
+
+.kc-king-alert-text {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #fbbf24;
+}
+
+.kc-king-alert-text--final {
+  font-size: 1.1rem;
+  color: #f06040;
+}
+
+@media (min-width: 430px) {
+  .kc-ring-area {
+    --kc-ring-radius: 180px;
+  }
+  .kc-mini-card {
+    width: 30px;
+    height: 42px;
+  }
+  .kc-mini-value {
+    font-size: 10px;
+  }
+  .kc-mini-suit {
+    font-size: 9px;
+  }
+  .kc-flip-card {
+    width: 120px;
+    height: 168px;
+  }
 }
 
 /* Trivia answer feedback states */
@@ -71,11 +377,104 @@
   box-shadow: 0 8px 24px rgba(0,0,0,0.5), inset 0 -3px 0 rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8);
 }
 
-/* Spectrum bar */
+/* Spectrum bar — simple (used elsewhere) */
 .spectrum-bar {
   height: 0.6rem;
   border-radius: 999px;
   background: linear-gradient(90deg, #38bdf8, #6366f1, #a78bfa);
+}
+
+/* Wavelength game — interactive spectrum */
+.wavelength-spectrum {
+  position: relative;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(90deg, #38bdf8, #6366f1, #a78bfa);
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(56,189,248,0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* Target zone highlight */
+.wavelength-target {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 20px rgba(255,255,255,0.3), inset 0 0 10px rgba(255,255,255,0.2);
+  animation: wavelength-glow 2s ease-in-out infinite;
+}
+
+.wavelength-target-reveal {
+  animation: wavelength-reveal-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Guess needle */
+.wavelength-needle {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 4px;
+  margin-left: -2px;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255,255,255,0.6), 0 0 16px rgba(255,255,255,0.3);
+  transition: left 0.05s ease-out;
+}
+
+.wavelength-needle::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.wavelength-needle::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.wavelength-needle-active {
+  transition: left 0.08s ease-out;
+}
+
+/* Phase indicator dots */
+.wavelength-phase-dot {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  transition: all 0.3s ease;
+}
+
+@keyframes wavelength-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,255,255,0.3), inset 0 0 10px rgba(255,255,255,0.2); }
+  50% { box-shadow: 0 0 30px rgba(255,255,255,0.5), inset 0 0 15px rgba(255,255,255,0.3); }
+}
+
+@keyframes wavelength-reveal-pop {
+  0% { transform: scaleY(0); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 1; }
 }
 
 /* Ride the Bus phase indicators */

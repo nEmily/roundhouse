@@ -96,7 +96,7 @@ function App() {
           {/* Logo */}
           <div className="mb-2">
             <span
-              className="text-8xl font-black leading-none block"
+              className="text-5xl sm:text-7xl md:text-8xl font-black leading-none block"
               style={{
                 background: 'linear-gradient(150deg, #fde68a 0%, #f5a623 40%, #e07a10 80%)',
                 WebkitBackgroundClip: 'text',
@@ -159,11 +159,29 @@ function App() {
             Who's Playing?
           </h2>
           <p
-            className="text-center text-sm font-semibold mb-8"
+            className="text-center text-sm font-semibold mb-6"
             style={{ color: 'var(--text-muted)' }}
           >
-            Add names or skip — just pass the phone in a circle
+            Add names for a personalized game, or jump straight in
           </p>
+
+          {/* Skip — play without names */}
+          {players.length === 0 && (
+            <button
+              onClick={() => startGame()}
+              className="btn w-full mb-6"
+              style={{
+                fontSize: '1.25rem',
+                padding: '1rem',
+                borderRadius: '1.25rem',
+                backgroundColor: 'var(--bg-elevated)',
+                color: 'var(--text-primary)',
+                border: '1.5px solid var(--border-mid)',
+              }}
+            >
+              Skip — Play Without Names
+            </button>
+          )}
 
           {/* Add player form */}
           <form
@@ -235,7 +253,7 @@ function App() {
             style={{ fontSize: '1.4rem', padding: '1.1rem', borderRadius: '1.25rem' }}
           >
             {players.length > 0
-              ? `Start Game  (${players.length} players)`
+              ? `Start Game (${players.length} player${players.length === 1 ? '' : 's'})`
               : 'Start Game'}
           </button>
         </div>
