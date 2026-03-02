@@ -36,7 +36,7 @@ export function KingsCup() {
 
   const drawCard = useCallback((index: number) => {
     const card = cards[index];
-    if (!card || card.drawn || currentCard) return;
+    if (!card || card.drawn || currentCard || animatingCardIndex !== null) return;
 
     setAnimatingCardIndex(index);
 
@@ -62,7 +62,7 @@ export function KingsCup() {
         }
       }
     }, 300);
-  }, [cards, currentCard, drawCount, kingsDrawn]);
+  }, [cards, currentCard, drawCount, kingsDrawn, animatingCardIndex]);
 
   const handleNext = () => {
     setCurrentCard(null);
